@@ -1,0 +1,53 @@
+{
+  "platform": "Telkonet Legacy Serial (EcoInsight/EcoSense/EcoTouch/EcoAir/EcoSource)",
+  "room_variable": "Room_Number",
+  "network_address": "Gateway_MAC",
+  "commands": {
+    "occ_share": "da -I 6 -m 0x",
+    "lock_join": "jn -t 120"
+  },
+  "binding_steps": {
+    "gateway_join_mode": [
+      "Press the button on the EcoPlus Gateway 3 times.",
+      "The logo will begin flashing — this confirms the gateway is in Join Mode.",
+      "Join window remains open for 15 minutes."
+    ],
+    "ecoinsight_join": [
+      "Press the small middle button: Left, Left, Right, Right.",
+      "The EcoInsight will enter pairing mode."
+    ],
+    "ecosource_join": [
+      "Press the button on the EcoSource 5 times.",
+      "The EcoSource will enter pairing mode."
+    ],
+    "ecoair_to_source": [
+      "On the EcoAir, hold the On/Off button until the display shows the last two digits of the EcoSource MAC address.",
+      "Release to confirm pairing."
+    ],
+    "ecotouch_to_source": [
+      "Press the button on the EcoSource 7 times to put it in pairing mode.",
+      "On the EcoTouch screen, perform a three-finger tap.",
+      "Tap Configure, enter password C57A, tap Pair, then tap Search.",
+      "The EcoSource MAC address should appear in the results — select it to complete pairing."
+    ],
+    "sensor_door_contact_to_insight": [
+      "On the EcoInsight, press: Left, Left, Left, Left, Right, Right, Right, Right.",
+      "The display will show 'Learn Mesh' — this confirms it is ready to receive.",
+      "Press the button on the occupancy sensor 4 times.",
+      "Wait for the sensor light to blink 4 times fast — this confirms successful pairing.",
+      "For a door contact: press the button 4 times, then listen for 4 beeps to confirm mesh join.",
+      "Press the door contact button 8 more times to associate it to the magnet."
+    ],
+    "ecoinsight_legacy_join": [
+      "Put EcoInsight into Learn Mode: Press Left 4 times, then Right 4 times.",
+      "Press the Join/Bind tab on the EcoSense 4 times.",
+      "Verify the light blinks slowly, then flashes 4 times to confirm pairing."
+    ],
+    "door_lock_pairing_ving": [
+      "Plug serial cable into the master thermostat.",
+      "Access slot 1 and execute command: jn -t 120",
+      "Present the discovery key to the lock face.",
+      "Place the EMI key on the lock to assign the room number."
+    ]
+  }
+}

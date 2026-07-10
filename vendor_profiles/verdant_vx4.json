@@ -1,0 +1,95 @@
+{
+  "platform": "Verdant VX4 Series (Copeland)",
+  "room_variable": "Room_Number",
+  "network_address": "Mesh_ID",
+  "equipment_identifier": "Equipment_Code",
+  "configuration_landmarks": {
+    "entry_sequence": "Press and hold FAN and SYSTEM MODE simultaneously",
+    "save_sequence": "Press SETTINGS button to commit and exit"
+  },
+  "data_extraction_map": {
+    "source_fields": {
+      "room": ["Room", "Rm", "Room_No", "Unit"],
+      "mesh": ["Mesh", "Net_ID", "Network", "Mesh_ID"],
+      "equipment_id": ["Equipment_Code", "Equip_ID", "HVAC_Type", "Config_Code"]
+    },
+    "equipment_code_lookup": {
+      "digit_1_compressor":{
+        "0": "No Electric Heat",
+        "1": "Heat Pump",
+        "2": " Air Conditioner"
+      },
+      "digit_2_electric_heat":{
+        "0": "No Electric Heat",
+        "1": "Electrtic Heat"
+      },
+      "digit_3_reverse_valve":{
+        "0": "O/B Contact energized to Cool",
+        "1": "O/B Contact energized to Heat"
+      },
+      "digit_4_fan_speed":{
+        "0": "N/A",
+        "1": "One Fan Speed",
+        "2": "Two Fan Speeds",
+        "3": "Three Fan Speeds"
+      }
+    },
+    "sensor_config" {
+      "Notes": [
+        "Thermostat and HVAC unit must be powered Before starting",
+        "Thermostat faceplate must be removed.",
+        "Configuration screens have been a 30-second timeout - if no action is taken thermostat exits configuration.",
+        "OCC default setting - 1 on VX4."
+      ],
+      "occ_trailing_digit": {
+        "0": "Occupancy Disabled / Door Switch Disabled / Temp Sensor Disabled",
+        "1": "Occupany Enabled / Door Switch Normally CLosed / Temp Sensor Master",
+        "2": "Door Switch Normally Open / Temp Sensor Average",
+      },
+      "pairing_a_sensor":{
+        "description": "Pair a New occupancy sensor, door switch, or temperature sensor to the thermostat",
+        "steps": [
+          "Press and hold SYSTEM MODE and FAN buttons to access Mesh ID screen.",
+          "Press and Hold SYSTEM MODE and FAN buttons again untill 'ZbEE' apperars.",
+          "Press SETTINGS button untill 'SENS' appears.",
+          "Press the butoon on the sensor to activate pairing."
+          "Press FAN button on the thermostat to initiate pariing of a  new sensor. This starts a 10-second countdown and displays the last 5 digits of discovered sensor ID",
+          "Use UP/DOWN buttons to toggle between discovered sensors.",
+          "Ensure the unique device ID on screen matches the unique device ID on the sensor.",
+          "Press SETTINGS button when the Unique ID (numerical) apperars.",
+          "Select 'OCC1' for occupancy sensor, 'DS1' for door switch, 'rt1' for master temp sensor, 'rt2' for average temp sensor, or '0' to disable.".
+          "Press SETTINGS button - a 30-seconds countdown will begin. 'SUcc' will show when successfully paired.",
+          "If pairing fails press SYSTEM MODE button to try again."
+        ]
+      },
+      "configuring_sensor_fuctionality": {
+        "description": "Set or change role a paired sensor plays after it is already linked",
+        "steps": [
+          "Press and hold SYSTEM MODE and FAN until Mesh ID screen appears.",
+          "Press and Hold SYSTEM MODE and FAN buttons again untill 'ZbEE' apperars.",
+          "Press SETTINGS button untill 'SENS' appears.",
+          "Press SETTINGS button to display th enumber of linked sensors.",
+          "Press SETTINGS button again to display the UniqueID of paired sensors. Use UP/DOWN to cycle through them.",
+          "Press SETTINGS button again. 'OCC1' will appear -use UP/DOWN to change digits based on the OCC trailing digit table.",
+          "Press SETTINGS buttion to configure Door Switch functionality (dsx). Set Normally Open (NO) or Normally CLosed (NC) depending on reed switch type."
+          "Press SETTINGS button to conffigure Temperature Sensor fuctionality (rtx).",
+          "Press SETTINGS button to finalize paring."
+        ]
+      },
+      
+
+        ]
+
+    }
+  },
+  "binding_steps": [
+    "Unpack the VX4 faceplate and populate the rear battery chamber with 2 AA cells.",
+    "Verify the display initializes into the master 'SETUP' wizard mode interface.",
+    "Input the targeted project-specific 'Mesh ID' network identifier string.",
+    "Input the unique 4-digit 'Room Number' identifier using the interface toggle keys.",
+    "Input the required 'Equipment Code' matched and extracted from the mechanical design sheet.",
+    "Press the SETTINGS key once to trigger the 30-second localized RF proximity discovery window.",
+    "Confirm on-screen feedback matches the barcode label ID printed on the physical HVAC controller shell.",
+    "Press the SETTINGS key a second time to lock down the RF channel binding parameters."
+  ]
+}
