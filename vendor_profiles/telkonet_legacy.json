@@ -1,53 +1,354 @@
 {
-  "platform": "Telkonet Legacy Serial (EcoInsight/EcoSense/EcoTouch/EcoAir/EcoSource)",
-  "room_variable": "Room_Number",
-  "network_address": "Gateway_MAC",
-  "commands": {
-    "occ_share": "da -I 6 -m 0x",
-    "lock_join": "jn -t 120"
+  "platform": "Telkonet EcoSmart PLUS Products",
+  "revision": "18",
+  "room_variable": "Node_ID",
+  "network_address": "Network_Key",
+  "software_tool": "ESU - EcoSmart Serial Utility",
+  "warnings": [
+    "Do NOT press and hold any device button for 10 seconds — this erases device setup.",
+    "Multiple installers should not associate EcoSource+ and EcoAirs at the same time to avoid cross-association.",
+    "Ensure coordinator is set to correct CHANNEL and PAN before joining first device. Changing PAN or Channel after first device joins is NOT possible.",
+    "Do not press recessed buttons too quickly. Each press should be deliberate and last a full second."
+  ],
+  "gateway_coordinator": {
+    "model": "NT8000",
+    "join_mode": {
+      "steps": [
+        "After plugging CAT5 or power cable into NT8000 Gateway Coordinator wait 4 minutes to fully enable join mode.",
+        "Press the Gateway button 3 times.",
+        "The Telkonet logo blinks continuously — Gateway is now in Join Mode for 15 minutes.",
+        "If logged into device via WiFi a joining countdown will appear.",
+        "To disable Join Mode early press the Gateway button 3 times again."
+      ]
+    },
+    "legacy_ecoconnect_coordinator": {
+      "steps": [
+        "Using a paperclip or pen press and hold the recessed button on the front of the EcoConnect for 7 seconds then release.",
+        "LED on the front changes to rapid blinking GREEN confirming Join Mode.",
+        "To disable Join Mode press the recessed button one time."
+      ]
+    }
   },
-  "binding_steps": {
-    "gateway_join_mode": [
-      "Press the button on the EcoPlus Gateway 3 times.",
-      "The logo will begin flashing — this confirms the gateway is in Join Mode.",
-      "Join window remains open for 15 minutes."
-    ],
-    "ecoinsight_join": [
-      "Press the small middle button: Left, Left, Right, Right.",
-      "The EcoInsight will enter pairing mode."
-    ],
-    "ecosource_join": [
-      "Press the button on the EcoSource 5 times.",
-      "The EcoSource will enter pairing mode."
-    ],
-    "ecoair_to_source": [
-      "On the EcoAir, hold the On/Off button until the display shows the last two digits of the EcoSource MAC address.",
-      "Release to confirm pairing."
-    ],
-    "ecotouch_to_source": [
-      "Press the button on the EcoSource 7 times to put it in pairing mode.",
-      "On the EcoTouch screen, perform a three-finger tap.",
-      "Tap Configure, enter password C57A, tap Pair, then tap Search.",
-      "The EcoSource MAC address should appear in the results — select it to complete pairing."
-    ],
-    "sensor_door_contact_to_insight": [
-      "On the EcoInsight, press: Left, Left, Left, Left, Right, Right, Right, Right.",
-      "The display will show 'Learn Mesh' — this confirms it is ready to receive.",
-      "Press the button on the occupancy sensor 4 times.",
-      "Wait for the sensor light to blink 4 times fast — this confirms successful pairing.",
-      "For a door contact: press the button 4 times, then listen for 4 beeps to confirm mesh join.",
-      "Press the door contact button 8 more times to associate it to the magnet."
-    ],
-    "ecoinsight_legacy_join": [
-      "Put EcoInsight into Learn Mode: Press Left 4 times, then Right 4 times.",
-      "Press the Join/Bind tab on the EcoSense 4 times.",
-      "Verify the light blinks slowly, then flashes 4 times to confirm pairing."
-    ],
-    "door_lock_pairing_ving": [
-      "Plug serial cable into the master thermostat.",
-      "Access slot 1 and execute command: jn -t 120",
-      "Present the discovery key to the lock face.",
-      "Place the EMI key on the lock to assign the room number."
+  "join_options": {
+    "option_a": "Join through coordinator — enable Join Mode on coordinator then join each device.",
+    "option_b": "Join through a thermostat already on the network acting as broker. On EcoAir or EcoInsight+ press Left 5 times then Right 5 times. Thermostat acts as broker between coordinator and new device."
+  },
+  "device_matrix": {
+    "EcoInsight+": {
+      "pairs_with": ["Gateway", "EcoContact+", "EcoSense+", "EcoSwitch+", "EcoSwitch_Legacy", "EcoGuard_Legacy", "EcoDimmer+"],
+      "join_to_gateway": [
+        "Ensure coordinator Join Mode is enabled.",
+        "On the EcoInsight+ press the 2 soft buttons located in the lower middle of the faceplate: Left, Left, Right, Right.",
+        "Verify 2 bars appear above room temperature — EcoInsight+ is requesting to join.",
+        "Wait up to 60 seconds for bars to disappear.",
+        "Verify zero bars show above room temperature — EcoInsight+ has joined the network."
+      ],
+      "leave_network": [
+        "Press and hold Fan button for 10 seconds then release.",
+        "Press On/Off. Maintenance menu appears on right of screen.",
+        "Arrow down to Mesh option and press On/Off. '58' will appear.",
+        "Press Down arrow to navigate to '86'. 'Leave' will show in upper left corner.",
+        "Press On/Off again. '00' will appear at bottom.",
+        "Press Up button once. '00' changes to '01'.",
+        "Press On/Off. Thermostat clicks and screen goes blank — it has left the network."
+      ],
+      "clear_da_table": [
+        "Press and hold Fan button for 10 seconds then release.",
+        "Press On/Off. Maintenance menu appears.",
+        "Use Up/Down arrows to navigate to 'Erase'.",
+        "Press On/Off. Large '01' appears.",
+        "Press On/Off again. '00' appears indicating zero devices in DA table."
+      ]
+    },
+    "EcoSource+": {
+      "pairs_with": ["Gateway", "EcoAir_HS", "EcoTouch+", "EcoContact+", "EcoSense+", "EcoSwitch+", "EcoSwitch_Legacy", "EcoGuard_Legacy", "EcoDimmer+"],
+      "join_to_gateway": [
+        "Ensure coordinator Join Mode is enabled.",
+        "Using a paperclip or pen press the recessed button on the front of EcoSource+ 5 times.",
+        "LED blinks RED RED GREEN — EcoSource+ is requesting to join.",
+        "LED blinks fast GREEN for approx 10 seconds indicating EcoSource+ has joined the network."
+      ],
+      "leave_network_below_3_4_1": [
+        "Press and hold recessed button for at least 10 seconds until LED turns from RED to GREEN.",
+        "Release. Light will turn off then on confirming it has left the network."
+      ],
+      "leave_network_3_4_1_and_higher": [
+        "Press the recessed button 12 times.",
+        "Light will turn off then on confirming it has left the network."
+      ],
+      "clear_da_table": [
+        "Press and hold recessed button for 10 seconds then release. Light blinks red and green rapidly.",
+        "Press the recessed button 10 times. DA table is now cleared."
+      ]
+    },
+    "EcoSmart_VRF_Controller": {
+      "join_to_gateway": [
+        "Ensure coordinator Join Mode is enabled.",
+        "On the VRF Controller press the Join/Pair button 5 times.",
+        "LED blinks red, red, green then blinks rapid green to indicate success."
+      ],
+      "clear_da_table": [
+        "Press and hold recessed button for 10 seconds then release. Light blinks red and green rapidly.",
+        "Press the recessed button 10 times. DA table is now cleared."
+      ]
+    },
+    "EcoContact+": {
+      "join_to_EcoInsight+": [
+        "EcoInsight+ must already be joined to the network.",
+        "On EcoInsight+ quickly press Left soft button 4 times then Right soft button 4 times. EcoInsight+ enters Learn Mode.",
+        "Using extractor or paperclip press the EcoContact+ Join/Bind button 4 times.",
+        "LED blinks slowly while searching for network then turns off for a few seconds.",
+        "LED flashes 4 times and you hear 4 beeps — EcoContact+ has joined and bound to thermostat.",
+        "Press EcoContact+ Join/Bind button 8 times. LED blinks twice.",
+        "Touch correct sensor target to correct magnet target. You will hear beeps for one minute.",
+        "Keep magnets at least 8 inches away from sensor for 60 seconds until sensor stops searching."
+      ],
+      "join_to_EcoSource+": [
+        "EcoSource+ must already be joined to the network.",
+        "Using paperclip press EcoSource+ recessed button above LED 7 times. LED flashes RED RED GREEN.",
+        "Using extractor or paperclip press the EcoContact+ Join/Bind button 4 times.",
+        "LED blinks slowly while searching then turns off for a few seconds.",
+        "LED flashes 4 times and you hear 4 beeps — EcoContact+ has joined and bound.",
+        "Press EcoContact+ Join/Bind button 8 times. LED blinks twice.",
+        "Touch correct sensor target to correct magnet target. Beeps for one minute.",
+        "Keep magnets at least 8 inches away for 60 seconds."
+      ],
+      "join_to_VRF_Controller": [
+        "VRF Controller must already be joined to the network.",
+        "On the EcoSource VRF Controller press Join/Pair button 1 time. LED lights solid RED.",
+        "Using extractor or paperclip press EcoContact+ Join/Bind button 4 times.",
+        "LED blinks slowly while searching then turns off.",
+        "LED flashes 4 times and you hear 4 beeps confirming join.",
+        "Press EcoContact+ Join/Bind button 8 times. LED blinks twice.",
+        "Touch sensor target to magnet target. Beeps for one minute.",
+        "Keep magnets 8 inches away for 60 seconds."
+      ],
+      "leave_network": [
+        "Press recessed Join/Bind button 12 times. Device presents 1 long light then reboots."
+      ],
+      "test_connectivity": {
+        "1_long_beep": "Not paired or joined to anything",
+        "2_beeps": "Joined to coordinator",
+        "4_beeps": "Joined to coordinator and paired to thermostat"
+      }
+    },
+    "EcoSense+": {
+      "join_to_EcoInsight+": [
+        "EcoInsight+ must already be joined to the network.",
+        "On EcoInsight+ press Left soft button 4 times then Right soft button 4 times.",
+        "Press the EcoSense+ Join/Bind tab 4 times.",
+        "Light sensor blinks slowly while searching then turns off for a few seconds.",
+        "Light sensor flashes 4 times confirming EcoSense+ has joined and bound to thermostat."
+      ],
+      "join_to_EcoSource+": [
+        "EcoSource+ must already be joined to the network.",
+        "Using paperclip press EcoSource+ recessed button above LED 7 times. LED flashes RED RED GREEN.",
+        "Press the EcoSense+ Join/Bind tab 4 times.",
+        "Light sensor blinks slowly while searching then turns off.",
+        "Light sensor flashes 4 times confirming join."
+      ],
+      "join_to_VRF_Controller": [
+        "VRF Controller must already be joined to the network.",
+        "On EcoSource VRF Controller press Join/Pair button 1 time. LED lights solid RED.",
+        "Press EcoSense+ Join/Bind tab 4 times.",
+        "Light sensor blinks slowly while searching.",
+        "Light sensor flashes 4 times confirming join."
+      ],
+      "leave_network": [
+        "Press button 12 times. Device presents 1 long light then reboots."
+      ],
+      "test_connectivity": {
+        "1_long_beep": "Not paired or joined to anything",
+        "2_beeps": "Joined to coordinator",
+        "4_beeps": "Joined to coordinator and paired to thermostat"
+      }
+    },
+    "EcoSwitch_Plus": {
+      "join_to_EcoInsight+": [
+        "EcoInsight+ must already be joined to the network.",
+        "On EcoInsight+ press and hold Fan button for 10 seconds then release and press On/Off once. Maintenance menu appears on right of screen.",
+        "Press Up button once then press On/Off. Large '01' appears with small 'ADV Prog' at bottom.",
+        "Press Up button until you see small '47' at bottom then press On/Off once. '00' appears to right of '47'. You are now in Join Mode.",
+        "On the EcoSwitch+ tap the rocker switch (side closest to LED) 10 times.",
+        "EcoSwitch+ LED toggles on and off twice indicating successful join.",
+        "Note: Check DA table to verify JASCO device is in DA table.",
+        "Reboot or power cycle thermostat."
+      ],
+      "join_to_EcoSource+": [
+        "EcoSource+ must already be joined to the network.",
+        "Using paperclip press EcoSource+ recessed button above LED 15 times. EcoSource+ flashes RED RED GREEN.",
+        "On EcoSwitch+ tap the rocker switch (side closest to LED) 10 times.",
+        "EcoSwitch+ LED toggles on and off twice indicating successful join.",
+        "Reboot or power cycle thermostat."
+      ],
+      "join_to_VRF_Controller": [
+        "Ensure coordinator Join Mode is enabled.",
+        "LED on VRF Controller lights solid RED.",
+        "On EcoSwitch+ tap the rocker switch (side closest to LED) 10 times.",
+        "LED toggles on and off twice indicating successful join.",
+        "Reboot or power cycle thermostat."
+      ],
+      "remove_from_network": [
+        "Ensure no thermostats or Gateways are in join mode.",
+        "Quickly press the top part of the rocker switch (side furthest from LED) 10 times.",
+        "Warning: EcoSwitch+ will attempt to rejoin immediately so no thermostats or Gateways should be in join mode."
+      ]
+    },
+    "EcoSwitch_Legacy": {
+      "join_to_network": [
+        "Ensure coordinator Join Mode is enabled.",
+        "On the EcoSwitch press and hold the toggle switch until RED LED blinks rapidly (approx 10 seconds). Release.",
+        "LED slowly flashes GREEN while searching for network.",
+        "LED changes to quick GREEN flash signifying join was successful."
+      ],
+      "bind_to_EcoInsight+": [
+        "On EcoInsight+ quickly press Left soft button 4 times then Right soft button 4 times. EcoInsight+ enters Learn Mode.",
+        "On the EcoSwitch press and hold toggle switch until GREEN LED blinks slowly 2 times then release.",
+        "In ESU refresh the Devices Sensors table. 'LSW' will now appear."
+      ],
+      "bind_to_EcoSource+": [
+        "Using paperclip press EcoSource+ recessed button above LED 6 times. LED flashes RED RED GREEN.",
+        "On EcoSwitch press and hold toggle switch until GREEN LED blinks slowly 2 times then release.",
+        "In ESU refresh Devices Sensors table. 'LSW' will now appear."
+      ],
+      "bind_to_VRF_Controller": [
+        "On EcoSource VRF Controller press Join/Pair button 6 times. LED lights solid RED.",
+        "On EcoSwitch press and hold toggle switch until GREEN LED blinks slowly 2 times then release.",
+        "In ESU refresh Devices Sensors table. 'LSW' will now appear."
+      ],
+      "leave_network": [
+        "Press and hold toggle switch for at least 10 seconds until GREEN LED blinks quickly. Release.",
+        "Press and hold toggle switch again for at least 10 seconds until GREEN LED blinks quickly. Release.",
+        "Solid red light for 3 seconds confirms it has left the network."
+      ]
+    },
+    "EcoGuard_Legacy": {
+      "join_to_network": [
+        "Ensure coordinator Join Mode is enabled.",
+        "Using paperclip press and hold EcoGuard recessed Join/Bind button until top LED blinks RED rapidly (about 10 seconds).",
+        "Release. Top LED slowly flashes GREEN while searching for network.",
+        "Top LED changes to quick GREEN flash signifying join was successful.",
+        "Ensure top and bottom LEDs are lit (both outlets have power). Press Join/Bind button repeatedly if needed until both LEDs are lit."
+      ],
+      "bind_to_EcoInsight+": [
+        "On EcoInsight+ quickly press Left soft button 4 times then Right soft button 4 times. EcoInsight+ enters Learn Mode.",
+        "Using paperclip press and hold EcoGuard Join/Bind button until GREEN LED blinks slowly 2 times then release.",
+        "In ESU refresh the Devices Sensors table. 'LCM' will now display."
+      ],
+      "bind_to_EcoSource+": [
+        "Using paperclip press EcoSource+ recessed button 6 times. LED flashes RED RED GREEN.",
+        "Using paperclip press and hold EcoGuard Join/Bind button until GREEN LED blinks slowly 2 times then release.",
+        "In ESU refresh Devices Sensors table. 'LCM' will now display."
+      ],
+      "bind_to_VRF_Controller": [
+        "On EcoSource VRF Controller press Join/Pair button 6 times. LED lights solid RED.",
+        "Using paperclip press and hold EcoGuard Join/Bind button until GREEN LED blinks slowly 2 times then release.",
+        "In ESU refresh Devices Sensors table. 'LCM' will now display."
+      ],
+      "leave_network": [
+        "Press recessed bind button for at least 10 seconds until GREEN LED blinks quickly then release.",
+        "LED displays solid red for 2-3 seconds. EcoGuard reboots confirming it has left the network."
+      ]
+    },
+    "EcoAir_HS": {
+      "pair_to_EcoSource+": [
+        "Use paperclip or pen to press EcoSource+ recessed button above LED light once. Solid RED LED will appear.",
+        "On EcoAir-HS press and hold On/Off button until Maintenance menu appears then continue holding until 2 large digits appear on screen (last 2 digits of MAC address). Release."
+      ],
+      "pair_to_VRF_Controller": [
+        "On EcoSource VRF Controller press Join/Pair button 1 time. LED lights solid RED.",
+        "On EcoAir-HS press and hold Fan button until 2 large digits appear on screen."
+      ]
+    },
+    "EcoTouch_Plus": {
+      "pair_to_EcoSource+": [
+        "Use paperclip or pen to press EcoSource+ recessed button above LED 7 times. LED blinks RED RED GREEN.",
+        "On EcoTouch+ perform a three-finger tap anywhere on screen.",
+        "Touch Config. Enter password C57A. Touch Enter.",
+        "Touch Pair then Search.",
+        "Wait while system searches.",
+        "When screen shows 'Success!' press Back, Back, Back."
+      ],
+      "pair_to_VRF_Controller": [
+        "Use paperclip or pen to press EcoSmart VRF Controller recessed button 7 times. LED blinks RED RED GREEN.",
+        "On EcoTouch+ perform a three-finger tap anywhere on screen.",
+        "Touch Config. Enter password C57A. Touch Enter.",
+        "Touch Pair then Search.",
+        "Wait while system searches.",
+        "When screen shows 'Success!' press Back, Back, Back."
+      ],
+      "unpair": [
+        "On EcoTouch+ three-finger tap anywhere on screen.",
+        "System Status screen appears.",
+        "Touch Config. Enter password C57A. Touch Enter.",
+        "Touch Unpair. Touch Delete.",
+        "Confirm deletion. Touch Delete.",
+        "When 'No longer Paired' appears touch Exit, Exit, Exit."
+      ]
+    }
+  },
+  "shared_occupancy": {
+    "description": "When a space has two thermostats and one detects occupancy for both — configure shared occupancy.",
+    "required_items": ["Laptop with ESU", "Dedicated ESU cable", "Access to both thermostats", "MAC address of each thermostat"],
+    "commands": {
+      "EcoInsight+_shares_occupancy": "sw -o 1",
+      "EcoSource+_shares_occupancy": "sw -o 2",
+      "da_command_format": "da -i 1 -m 0xFCAAAAAA -b 3"
+    },
+    "steps": [
+      "Join all devices in the space to the network.",
+      "Designate Thermostat A as the one sharing its occupancy status.",
+      "Connect Thermostat B to laptop via dedicated serial cable and open ESU.",
+      "Navigate to Devices/Sensors tab. Thermostat B should be on Slot 0 with Bind Type 0.",
+      "In the Cmd field enter: da -i 1 -m 0x[MAC of Thermostat A] -b 3 then press Enter.",
+      "Plug into Thermostat A.",
+      "If Thermostat A is EcoInsight+ enter: sw -o 1 in Cmd field.",
+      "If Thermostat A is EcoSource+ enter: sw -o 2 in Cmd field.",
+      "Navigate to Devices/Sensors tab in ESU. Slot 1 now contains MAC of Thermostat B with Bind Type 3.",
+      "Close ESU and disconnect cable. Shared occupancy is now configured."
     ]
+  },
+  "multi_bind_ecotouch": {
+    "description": "When a suite has two EcoTouch+ devices they must mirror each other via multi-bind.",
+    "steps": [
+      "Press Gateway button 3 times to enable Join Mode for 15 minutes.",
+      "Join EcoSource+ A to network by pressing its button 5 times.",
+      "Join EcoSource+ B to network by pressing its button 5 times.",
+      "Ensure Gateway Join Mode is disabled (logo not flashing).",
+      "Connect EcoSource+ A to ESU and enter: $jn -t 200 and $zb -B. Or press EcoSource+ A button 7 times.",
+      "On EcoTouch+ A: three-finger tap, Config, password C57a, Pair, Search. When Success press Back 3 times.",
+      "Verify EcoTouch+ A shows EcoSource+ A MAC as Parent in System Status.",
+      "Repeat for EcoTouch+ B paired to EcoSource+ B.",
+      "Multi-bind EcoTouch+ B to EcoSource+ A: connect EcoSource+ A to ESU and enter $zb -B. On EcoTouch+ B three-finger tap, Config, C57a, Pair, Search.",
+      "Repeat multi-bind for EcoTouch+ A to EcoSource+ B.",
+      "Verify by changing setpoint on EcoTouch+ A and confirming EcoTouch+ B shows same setpoint."
+    ]
+  },
+  "multi_bind_ecoair": {
+    "description": "One EcoAir communicates with multiple EcoSource+ devices. One is Master, others are Minions.",
+    "push_button_steps": [
+      "Determine which EcoSource+ will be Master.",
+      "Power down all devices.",
+      "Return power to Master EcoSource+.",
+      "Insert 2 AA batteries into EcoAir.",
+      "Press Master EcoSource+ button twice. LED blinks red.",
+      "Hold EcoAir On/Off button until EcoAir displays 2 digits on screen (up to 10 seconds).",
+      "Verify Master EcoSource+ LED changed from blinking red to blinking green.",
+      "Remove power from Master EcoSource+.",
+      "Return power to Minion EcoSource+.",
+      "Remove 2 AA batteries from EcoAir. Wait 15 seconds. Reinsert batteries.",
+      "Press Minion EcoSource+ button 3 times. LED blinks red.",
+      "Hold EcoAir On/Off button until EcoAir displays 2 digits on screen.",
+      "Verify Minion EcoSource+ LED changed from blinking red to blinking green.",
+      "Remove power from Minion EcoSource+.",
+      "Remove EcoAir batteries.",
+      "Return power to Master EcoSource+.",
+      "Insert EcoAir batteries.",
+      "Return power to each Minion EcoSource+."
+    ]
+  },
+  "third_party_door_locks": {
+    "supported": ["Saflok", "VingCard", "Salto", "Axxess", "Control4"],
+    "note": "Integration guides for door locks are found in Telkonet Partner Portal under Guides > I, O and M Guides > Installation Operation and Maintenance Guides."
   }
 }

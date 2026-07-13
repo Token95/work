@@ -1,0 +1,135 @@
+{
+  "platform": "Touch Combo (VDA Group / Telkonet)",
+  "room_variable": "Room_Name",
+  "network_address": "Network_Channel",
+  "software_tool": "Rhapsody Commissioning App (iOS / Android)",
+  "thermostat_models": ["Touch Combo"],
+  "related_devices": ["EcoContact+ (Contact+)", "EcoSense+ (Sense+)", "Ving Door Lock"],
+  "network_type": "BLE (commissioning) / Proprietary wireless mesh (Secure or Non-Secure) on channel 15, 20, 25, or 26",
+  "commissioning_app_menus": {
+    "main_menu": "Form a network, pair devices, use CLI commands.",
+    "standard_menu": "Discover info such as site name, room name, MQTT server, and time zone.",
+    "iot_connection_menu": "Discover IoT thermostat information.",
+    "advanced_menu": "Discover WPA2 user and password fields to utilize a WPA2 enterprise network; scroll down for the provision key.",
+    "ellipsis_icon": "Menu options change based on the current screen (e.g. 'Set Customer Settings', enter Advanced Mode for CLI commands).",
+    "disconnect": "Disconnect the thermostat from the commissioning app."
+  },
+  "binding_steps": {
+    "pre_installation_checks": [
+      "Contact your Project Manager to obtain Rhapsody login credentials.",
+      "Download the Rhapsody Commissioning App to an iPhone or Android device.",
+      "Allow Rhapsody to find Bluetooth devices and use device location.",
+      "Log in to the app using your email address and Rhapsody password.",
+      "Install Touch Combo thermostats per the Touch Combo IOM, and other VDA/Telkonet devices per the EcoContact+ IOM / EcoSense+ IOM before commissioning.",
+      "If applicable, obtain a list of PMS (property management system) room names from the Project Manager or Certified Partner."
+    ],
+    "put_thermostat_in_ble_mode": [
+      "Three-finger tap anywhere on the thermostat screen.",
+      "Tap the 'Config' button.",
+      "Enter the password provided by the Telkonet Project Manager, then tap 'Enter'.",
+      "Tap 'Commission'.",
+      "Tap 'Remote Setup'.",
+      "The 'Ready for BLE' screen appears - thermostat is now in BLE setup mode.",
+      "Tapping 'Cancel' while in BLE setup mode exits the mode."
+    ],
+    "commission_touch_combo_thermostat": [
+      "With the thermostat nearby and already in BLE mode, open the Rhapsody Commissioning App.",
+      "Tap on the correct thermostat from the discovered devices list (verify it's the right one if multiple are being commissioned simultaneously).",
+      "On the Device Setup screen, select the customer's property in the 'Customer Template' dropdown.",
+      "Tap the Ellipsis icon in the upper right corner, then tap 'Set Customer Settings' to apply customer settings.",
+      "Enter the Room name. If a Rhapsody/PMS interface will be used, enter the room number exactly as it appears in the PMS room list, starting with the number; append a brief location descriptor after a space if needed (e.g. '101 BR1'). Do not use dashes, commas, or other symbols.",
+      "Tap 'Apply Settings'.",
+      "A 'Settings applied' confirmation message appears - the thermostat is now commissioned.",
+      "If there are no devices to pair, take the thermostat out of BLE mode and move on to the next thermostat."
+    ],
+    "form_network": [
+      "Tap the Main menu.",
+      "Select 'Pairing'.",
+      "At the bottom of the screen, tap 'Form Network'.",
+      "Select Secure or Non-Secure (contact your Project Manager if unsure).",
+      "Select a Network channel: 15, 20, 25, or 26 - ensure other nearby devices are not on the same channel.",
+      "Tap 'OK'.",
+      "The Activity Log displays 'Success'; close the Activity Log."
+    ],
+    "pair_contact_plus": [
+      "Put the thermostat in BLE mode.",
+      "On the Pairing screen, tap the Devices Menu, then select 'Add device'.",
+      "Enter the slot number (1, 2, 3, etc. for first, second, third device paired).",
+      "Enter the Room name.",
+      "Set Type of device to 'Contact+'.",
+      "Set Secure/Non-secure, Polarity, Special Function, and Door/Window or Lanai (contact Project Manager if unsure of any).",
+      "Tap 'Add'.",
+      "On the Contact+, press the Join/Bind button four times; the app displays a pairing countdown.",
+      "Tap the Activity Log at the bottom of the screen to confirm 'Device add completed'."
+    ],
+    "identify_contact_plus_targets": [
+      "Note which targets the sensor and magnet should use (some have two targets).",
+      "Using the straight end of the extractor tool, a paperclip, or similar, press the EcoContact+ sensor button 8 times; the LED blinks twice.",
+      "Touch the sensor's target to the magnet's target. Release when you hear three single beeps (side target) or three double beeps (top target).",
+      "Tap the Activity Log to confirm 'Device add completed'."
+    ],
+    "pair_sense_plus": [
+      "On the Pairing screen, tap the Devices Menu, then select 'Add device'.",
+      "Enter the slot number and Room name.",
+      "Set Type of device to 'Sense+'.",
+      "Set Secure/Non-secure, Polarity, and Special Function (Door/Window or Lanai is n/a for Sense+).",
+      "Tap 'Add'.",
+      "On the Sense+, press the join/bind tab four times (with cover on or off); the app displays a pairing countdown.",
+      "Tap the Activity Log to confirm 'Device add completed'."
+    ],
+    "pair_ving_door_lock": [
+      "On the Pairing screen, tap the Devices Menu, then select 'Add device'.",
+      "Enter the slot number and Room name.",
+      "Set Type of device to 'Ving'.",
+      "Set Secure/Non-secure, Polarity, and Special Function (Door/Window or Lanai is n/a for Ving).",
+      "Tap 'Add'.",
+      "On the Ving door lock, tap the Discovery Card to the Ving card reader, then tap the EMS Card to the card reader.",
+      "The app displays a pairing countdown.",
+      "Tap the Activity Log to confirm 'Device add completed'."
+    ],
+    "test_ving_pairing_debug": [
+      "After joining the Ving lock, always debug (test the connection) before leaving to confirm the lock is sending messages.",
+      "Tap the Ellipsis button in the upper right to enter Advanced Mode.",
+      "Type the command 'ving debug 1' and tap Enter.",
+      "Lock/unlock the deadbolt or swipe a Staff card to generate an event.",
+      "Confirm a corresponding event message appears in the log; this message is required for integration with the Visionline Lock service.",
+      "If no event message appears, swipe the EMI card at the lock reader and try again.",
+      "Once testing is complete, turn off debugging by entering 'ving debug 0' and tapping Enter."
+    ],
+    "take_touch_combo_out_of_ble_mode": [
+      "On the Touch Combo, tap the 'Cancel' button.",
+      "Tap the back button repeatedly until returning to the main thermostat screen."
+    ]
+  },
+  "device_types": {
+    "Contact+": "Door/window/lanai magnetic contact sensor (EcoContact+); has configurable Polarity, Special Function, and Door/Window or Lanai settings.",
+    "Sense+": "Occupancy/environmental sensor (EcoSense+); Door/Window or Lanai setting is not applicable.",
+    "Ving": "VingCard-compatible door lock integration; Door/Window or Lanai setting is not applicable; requires Discovery Card and EMS Card presentation to pair, and a 'ving debug' CLI test before leaving site."
+  },
+  "network_channels": [15, 20, 25, 26],
+  "network_security_modes": ["Secure", "Non-Secure"],
+  "wifi_status_values": [
+    "MQTT connected",
+    "No Wi-Fi credentials",
+    "No MQTT configuration",
+    "Wi-Fi connection failed",
+    "No IP address",
+    "No internet access",
+    "TCP connection failed",
+    "DNS lookup failed",
+    "TCP connection timeout",
+    "TCP connection refused",
+    "MQTT auth failed"
+  ],
+  "cli_commands": {
+    "ving debug 1": "Enable debug logging on the Ving lock integration to verify event messages during testing.",
+    "ving debug 0": "Disable debug logging on the Ving lock integration once testing is complete."
+  },
+  "troubleshooting": {
+    "wifi_and_network_troubleshooting": "Available on thermostats with host firmware higher than v1.4.2.1. Access via: three-finger tap on thermostat screen > Config > enter password > Wi-Fi. The Wi-Fi Status screen displays one of the defined status values (see wifi_status_values) at the bottom of the screen to identify where the connection is failing.",
+    "ving_lock_no_event_message": "If no event message appears after locking/unlocking or swiping a Staff card during 'ving debug 1' testing, swipe the EMI card at the lock reader and try the event again.",
+    "wrong_thermostat_selected_during_commissioning": "If multiple nearby thermostats are being commissioned simultaneously, more than one may appear in the Rhapsody app discovery list - verify the correct thermostat is selected before tapping it.",
+    "channel_conflicts_during_form_network": "Ensure other nearby devices/networks are not already using the same Network channel (15, 20, 25, or 26) selected during Form Network.",
+    "wired_dry_contact_input": "TBD - not yet documented in this version of the guide (Appendix 1)."
+  }
+}

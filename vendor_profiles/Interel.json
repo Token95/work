@@ -1,0 +1,159 @@
+{
+  "platform": "Interel EOS2.0",
+  "room_variable": "Unit_Number",
+  "network_address": "MAC_Address",
+  "software_tool": "EOS Installer App (iOS) + Interel.IO (IIO) Web Platform",
+  "thermostat_models": ["EOS1", "EOS2"],
+  "network_type": "BLE (commissioning) / Wi-Fi + Zigbee (operational)",
+  "hvac_types": {
+    "STANDARD_EMS": "Standard Energy Management System room",
+    "NOTE": "HVAC engine modes are Disabled / No Saving / Smart Saving / Full Saving, not per-equipment types like FCU/PTAC/VRF"
+  },
+  "fan_speed_types": {
+    "OFF": "Off",
+    "LOW": "Low",
+    "MEDIUM": "Medium",
+    "HIGH": "High",
+    "AUTO": "Auto Fan"
+  },
+  "binding_steps": {
+    "pre_installation_checks": [
+      "Property set up in the cloud by Interel technical delivery team, with correct FW/config files ready in the online property.",
+      "User has been added under the organization and property to be commissioned in IIO web platform.",
+      "User has been granted 'EOS commissioning' rights in IIO web platform.",
+      "User has been granted 'Accessory commissioning' rights in IIO web platform (if commissioning accessories).",
+      "Commissioning smartphone: Apple device (min. iPhone 7 / iPhone SE 2nd gen or iPad 5), EOS Installer App downloaded from AppStore, BLE turned ON, internet access available.",
+      "Warning: During commissioning, do not kill the app and keep EOS powered ON, otherwise all steps must be redone from scratch."
+    ],
+    "installer_app_sign_in": [
+      "Press 'Sign in' button.",
+      "Sign in with Email/Password credentials or Single Sign-On (if activated by Interel).",
+      "Select the organization to which the EOS will be commissioned (if missing, it's an access-right issue - grant via IIO).",
+      "Select the property to which the EOS will be commissioned (if missing, it's an access-right issue - grant via IIO).",
+      "App is ready to start EOS commissioning (Scan EOS available) or shows 'Not authorized' if user lacks EOS commissioning rights."
+    ],
+    "pass_eos_into_commissioning_mode": [
+      "For first-time commissioning: EOS is powered ON already in commissioning mode, waiting to be discovered by the app.",
+      "For already-commissioned EOS: Long press the high fan speed button (fan 3) for ~10 seconds, or bottom corner if no fan 3 defined.",
+      "Tap 'YES' to enter commissioning mode.",
+      "EOS reboots.",
+      "EOS is in 'Commissioning' (BLE) mode, waiting to be discovered by the app."
+    ],
+    "eos_first_time_commissioning": [
+      "Wait for EOS to be discovered by the app (timeout 30s).",
+      "Tap 'Continue' once EOS has been discovered.",
+      "Enter the unit number for this EOS and tap 'Confirm'.",
+      "Optional: select the location if the unit has more than 1 location, then tap 'Confirm'.",
+      "Confirm the detail recap or tap 'change room number' to modify (cannot be undone once confirmed).",
+      "Tap 'OK, start download' - EOS downloads Wi-Fi/location settings and latest software (do not close app, switch apps, lock phone, or move away from EOS).",
+      "EOS downloads all defined FW files (installer app UI shows EOS1 FW file names even for EOS2).",
+      "On success tap 'Continue'; on failure tap 'Try again' and restart from the download step.",
+      "EOS is commissioned and online.",
+      "Press 'Home', kill the app, or press 'Restart' on the EOS screen to exit BLE mode and switch to operational mode."
+    ],
+    "eos_re_commissioning_to_another_unit": [
+      "Sign in and pass EOS into commissioning (BLE) mode.",
+      "Confirm the correct property is selected, then tap 'Scan EOS'.",
+      "Wait for EOS discovery (timeout 30s), tap 'Continue'.",
+      "Tap on 'EOS thermostat' tile, then 'Re-commission EOS', then confirm 'Re-commission EOS'.",
+      "Enter the new unit number and tap 'Confirm'.",
+      "If re-commissioning to an empty unit/location: select the location and confirm.",
+      "If EOS Replacement (EOS already commissioned to targeted unit): choose 'Add EOS' for an empty location or 'Replace EOS' to replace an already-commissioned location.",
+      "Confirm unit details recap, then follow the download/FW steps from EOS 1st time commissioning.",
+      "Note: re-commissioning an EOS to another unit unbinds all previously bounded Zigbee accessories; they must be re-commissioned."
+    ],
+    "zigbee_accessory_commissioning_general": [
+      "With EOS in BLE mode and commissioned/being commissioned to a unit, tap on the accessory to be commissioned from the device dashboard.",
+      "Tap 'Start binding procedure'.",
+      "Follow the accessory-specific binding instructions displayed by the app, tap 'Done' at each sub-step.",
+      "Wait for the app to bind to the accessory (binding timeout defined in IIO); on failure tap 'Try again' and restart from step 1.",
+      "On binding success, EOS sends an AA notification; tap 'Proceed to testing'.",
+      "Follow the accessory-specific testing instructions and tap 'Continue'.",
+      "On testing success the accessory shows 'Tested' and 'Connected' in green on the device dashboard; on failure tap 'Try again' or 'Reset binding' after repeated failures.",
+      "Repeat for all accessories to be bound to this EOS, then tap 'Home'.",
+      "Verify in IIO > Unit > Connected devices that triggering an event from each accessory produces an AB notification."
+    ],
+    "zigbee_accessory_decommissioning": [
+      "Sign in, pass EOS into commissioning (BLE) mode, and scan/discover EOS.",
+      "Tap on the accessory to de-commission from the device dashboard.",
+      "Tap 'Reset binding' and confirm.",
+      "EOS sends an AA notification and IIO is updated; accessory status changes to 'Binding pending' and 'Not connected'.",
+      "For door locks (VingCard, KABA), additional physical decommissioning steps are required using the respective discovery/disable RF cards."
+    ],
+    "vingcard_door_lock_commissioning": [
+      "Pre-requisite: discovery card ready; DL initialized with Auto DND and EMI events enabled via Lock Service 3G tool.",
+      "Tap 'Start binding', present the binding 'discovery' card close to the door (can represent every ~20s).",
+      "On binding success tap 'Proceed to testing'.",
+      "Trigger an event by opening or closing the door based on its current state.",
+      "On testing success, pairing is done; verify in IIO."
+    ],
+    "vingcard_door_lock_recommissioning": [
+      "Connect to EOS nb1, tap the Door Lock, then 'Start reset and Binding' to unbind.",
+      "Present the construction card to the Door Lock to stop its Zigbee communication.",
+      "Re-initialize the DL, re-apply Auto-DND, and re-enable EMI events using Lock 3G tool.",
+      "Connect to EOS nb2 and follow the VingCard 1st commissioning steps."
+    ],
+    "kaba_door_lock_commissioning": [
+      "Pre-requisite: RF AVR must be any iteration of 5.13 (version 6.0+ not supported); check via M-Unit Locks > 4-Diagnostic > 2-Advanced Diag.",
+      "Tap 'Start binding', present the disable RF card then the enable RF card to the Kaba lock, tap 'Done'.",
+      "On binding success tap 'Proceed to testing'; show any access card to the door lock to test.",
+      "On testing success, pairing is done."
+    ],
+    "jasco_switch_and_dimmer_commissioning": [
+      "Identify accessory type: in-wall switch, plug-in switch, in-wall dimmer v1.1, in-wall dimmer v3.0, or plug-in dimmer.",
+      "Perform the 'Reset' step (press ON/up button per accessory-specific count/duration) followed by the 'EZ-mode' step (press OFF/down button per accessory-specific count/duration).",
+      "Wait for binding; on Jasco v1.1 devices wait ~30s after binding success before testing.",
+      "Test by toggling ON/OFF and confirming the opposite state.",
+      "Warning: activate only 1 Jasco accessory at a time during pairing, or power all up together and wait 5 minutes before binding; force the project to a single Zigbee channel.",
+      "Note: for plug-in switches/dimmers and in-wall dimmer v3.0, ignore the app's displayed procedure (it shows the in-wall v1.1 steps) and follow the written SOP steps instead."
+    ],
+    "develco_sensors_commissioning": [
+      "Magnetic sensor: press and hold button 15s until LED blinks fast (reset), then 10s until LED blinks twice (EZ-mode); test by opening/closing the contact.",
+      "Motion sensor: open casing, press button 15s until LED blinks fast (reset), then 10s until LED blinks twice (EZ-mode); test by hiding sensor from movement then triggering movement. Note: MOSZB-130 HW 3.1.0 / FW 3.4.10 is incompatible with EOS 2.0 firmware.",
+      "Smoke sensor: open casing, press button 15s until LED blinks fast (reset), then 10s until LED blinks twice (EZ-mode); test by pressing the alarm button until 2 sets of 3 sound sweeps are heard."
+    ],
+    "danfoss_trv_commissioning": [
+      "Open cover, remove one battery, tap 'Done'.",
+      "While reinserting the battery, press and hold the button near the digital display, release after 4s once battery is installed.",
+      "Push the 'O' button for 5 seconds to calibrate the valve motor.",
+      "Short press the 'O' button to confirm the pairing icon is blinking.",
+      "Test by setting the target temperature to 23C on the radiator valve."
+    ],
+    "yale_door_lock_commissioning": [
+      "Input the master key initially configured on the lock, tap 'Done'.",
+      "Choose option 7 (Network Settings) on the lock keypad, tap 'Done'.",
+      "Press 1 on the lock keypad, tap 'Done'.",
+      "On binding success, tap 'Proceed to testing'.",
+      "Test by adjusting the thumbturn to a vertical position."
+    ],
+    "cms_commissioning": [
+      "In Interel.IO (IIO), navigate to Unit > Environment Details to verify Unit Occupancy, Device Status, HVAC Status, and Thermostat Current Mode.",
+      "Note: IIO may show 'unknown' / '--' values until the first data point is received from EOS.",
+      "Navigate to Unit > Connected Devices to verify each Zigbee accessory shows Online connectivity and correct commissioned status.",
+      "Trigger an event from each accessory and confirm it is reflected in IIO (AB notification)."
+    ],
+    "checking_functionality": [
+      "Verify EOS normal UI (out of BLE mode) reflects the configured behavior.",
+      "Select EOS fan speed on-device and confirm it updates in IIO.",
+      "Trigger door lock/contact/motion/smoke events and confirm status changes appear in IIO Connected Devices.",
+      "Confirm Wi-Fi details (SSID, signal, access point MAC) are correctly reported in IIO > WiFi Details."
+    ]
+  },
+  "setpoints": {
+    "engine_mode_options": ["Disabled", "No Saving", "Smart Saving", "Full Saving"],
+    "dehumidification_mode_options": ["Disabled", "Standby", "Scanning", "Dehumidifying"],
+    "hvac_mode_options": ["Cooling", "Heating", "Off"],
+    "fan_mode_options": ["Low", "Medium", "High", "Off", "Auto"],
+    "discovery_timeout_default": "30 seconds",
+    "jasco_v1_1_recommended_commissioning_timeout": "120 seconds (FM and EOS config)",
+    "jasco_wait_after_binding_before_testing": "~30 seconds"
+  },
+  "troubleshooting": {
+    "scan_eos_greyed_out": "User does not have 'EOS commissioning' rights. Grant rights in IIO web platform, then kill and restart the app.",
+    "eos_not_discovered_before_timeout": "EOS too far from phone (keep within ~40cm); EOS connects to Wi-Fi but not internet/MQTT (verify SSID/password in Fleet Manager vs. IoT Thing Hub, correct in Fleet Manager then restart app); app was killed during commissioning (restart app and EOS, redo from scratch); EOS in DEV environment commissioned to a PROD property or vice versa (upload correct ESP FW file for the environment).",
+    "unit_does_not_exist": "Wrong property selected (change default property in IIO, kill/restart app); wrong room number entered (use 'Change room number'); property misconfigured in Fleet Manager (edit property layout per EOS New Property Set Up guide).",
+    "accessory_adding_failed": "Nordic search timed out (retry 2-3 times); EOS config UTI does not match Fleet Manager accessory UTI for the room type (verify UTI match); accessory hardware failure (try another accessory); VingCard DL specific issue with many nearby beacon packets (turn off surrounding EOS units during pairing).",
+    "wrong_property_under_you_are_commissioning": "User is signed into the wrong organization/property context; re-select correct organization and property at sign-in.",
+    "eos1_vs_eos2_in_same_building": "Replacing an EOS1 with an EOS2 (or vice versa) is not supported - only replace with same HW version. Commissioning both EOS1 and EOS2 in the same unit type is not supported. Commissioning both in the same property is not recommended due to separate config/FW file management (EOS1 X vs EOS2 X)."
+  }
+}

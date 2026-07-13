@@ -1,11 +1,109 @@
 {
-	"platform": "Honeywell INNCOM",
-	"room_variable": "rId",
-	"network_address": "PAN_ID",
-	"binding_steps": [
-	  "Enter Service Mode on the E7 UI interface.",
-	  "Set the binding traget address configuration index to 65.",
-	  "Trigger the RF pairing window and present the authorization card."
-	  ]
-	}
-	
+  "platform": "Honeywell INNCOM",
+  "room_variable": "rId",
+  "network_address": "PAN_ID",
+  "thermostat_model": "E7",
+  "software_tool": "EngINN",
+  "dongle": "PC-503",
+  "hvac_types": {
+    "00": "Not Defined",
+    "FC4": "4-pipe fan coil unit (also 2-pipe cold water only with electric heat)",
+    "FW2": "2-pipe fan coil with backup electric heat (requires pipe temp sensor)",
+    "FC2": "2-pipe fan coil without backup electric heat (requires pipe temp sensor)",
+    "PAC": "PTAC unit",
+    "HbW": "Heat Pump B with W2 assist",
+    "HpB": "Heat Pump B with W2 replace",
+    "HoW": "Heat Pump O with W2 assist",
+    "HpO": "Heat Pump O with W2 replace"
+  },
+  "fan_speed_types": {
+    "00": "Not Defined",
+    "Lo": "Low Speed (single speed)",
+    "LH": "Low / High",
+    "LMh": "Low / Medium / High"
+  },
+  "binding_steps": {
+    "initialization_mode": [
+      "Ensure thermostat is mounted and connected to the Smart Wall Plate before starting.",
+      "When properly connected, thermostat enters INITIALIZATION MODE and displays 'rId'.",
+      "If not connected, unit displays 'SWp' alert until Smart Wall Plate is connected."
+    ],
+    "set_room_id": [
+      "Once 'rId' is displayed press MODE button. Default Room ID (65535) scrolls across screen.",
+      "The 5-digit Room ID is entered in three parts: highest digit, middle two digits, lowest two digits.",
+      "Use UP/DOWN arrows to set the highest digit (range 0-6) then press the FAN button to confirm.",
+      "Set the middle 2 digits (range 0-99) and press FAN button to confirm.",
+      "Set the lowest 2 digits (range 0-99) and press MODE button to confirm.",
+      "The new Room ID scrolls across the display and the unit beeps when stored to memory.",
+      "Press DOWN arrow to display HVAC menu."
+    ],
+    "set_hvac_type": [
+      "Once HVAC menu is displayed press MODE button.",
+      "Use UP/DOWN arrows to select the correct HVAC type from the hvac_types list.",
+      "Press FAN button to accept. Unit beeps to confirm.",
+      "Press DOWN arrow to display Fan Speed menu."
+    ],
+    "set_fan_speed": [
+      "Use UP/DOWN arrows to select fan speed: 00, Lo, LH, or LMh.",
+      "NOTE: For heat pump models using reversing valve, medium fan speed is not available.",
+      "Press FAN button to execute. Unit beeps to confirm.",
+      "Press the temp unit button to exit INITIALIZATION MODE.",
+      "'STr' is displayed confirming setup values stored in memory.",
+      "Unit reboots and begins operating HVAC as configured."
+    ],
+    "entering_service_mode": [
+      "Press and hold the temp unit button.",
+      "While holding, press and release MODE, then press and release FAN.",
+      "Release the temp unit button. Thermostat is now in Service Mode."
+    ],
+    "resetting_room_id_in_service_mode": [
+      "NOTE: Only follow this if Room ID needs to change after Initialization Mode.",
+      "In service mode navigate to 'rId' parameter and press MODE.",
+      "Default Room ID (65535) scrolls across screen.",
+      "Set highest digit and press FAN. Set middle 2 digits and press FAN. Set lowest 2 digits and press MODE.",
+      "New Room ID scrolls across screen to confirm."
+    ],
+    "setting_pan_id_and_rf_channel": [
+      "INNCOM Deep Mesh Network uses PAN ID and RF Channel to group rooms per Edge Router.",
+      "Assign PAN ID and RF Channel as per Edge Router configuration in EngINN.",
+      "For standalone property or model room: set PAN ID to 1 and RF Channel to 26.",
+      "In service mode navigate to 'PAn' (PAN ID) and press MODE.",
+      "Use UP/DOWN arrows to set the PAN ID and press FAN to confirm.",
+      "Navigate to RF Channel parameter, press MODE, set correct RF Channel, press FAN to confirm."
+    ],
+    "enginn_configuration": [
+      "Requires PC/laptop, dongle PC-503, and Inncom proprietary tool EngINN.",
+      "In EngINN Deployment Data window populate the Room ID.",
+      "Verify RF Channel, PAN ID, and Room ID in EngINN match the installed E7.",
+      "Assign the same RF Channel for PC503 in EngINN.",
+      "In EngINN go to Deployment Data, Room Type, select the E7 thermostat and click BIND.",
+      "Press Ping button to confirm device is online.",
+      "Click Write Configuration to upload. Task Manager window shows upload status."
+    ],
+    "change_e7_address_multi_hvac_suite": [
+      "In service mode navigate to E7 parameter and press MODE.",
+      "Use UP/DOWN arrows to set the E7 address and press FAN to confirm.",
+      "Press temp unit button to exit service mode.",
+      "Click Write Configuration in EngINN to upload the new address."
+    ],
+    "binding_s541_rfd_occupancy_sensor": [
+      "In EngINN go to Deployment Data, Room Type, select the S541.RFD device and click BIND.",
+      "Press Send button to transmit the bind message.",
+      "Press the blue S1 switch on the S541.RF to accept the bind.",
+      "Success: LED flashes 3 times and EngINN beeps 3 times and displays Device is online."
+    ],
+    "binding_k594_rf_door_sensor": [
+      "In EngINN go to Deployment Data, Room Type, select the K594.RF device and click BIND.",
+      "Press Send button to transmit the bind message.",
+      "Press the recessed Bind button next to the status LED on the K594.RF using a paper clip.",
+      "Success: LED flashes 3 times and EngINN beeps 3 times and displays Device is online."
+    ],
+    "checking_functionality": [
+      "HVAC: Test all available fan speeds, cooling and heating operations.",
+      "Balcony/Window Switch: In service mode navigate to 'bln' (Balcony) and press MODE.",
+      "Thermostat displays and beeps if balcony is open.",
+      "When closed thermostat counts open/close events. Allow count to reach at least 3 for valid test.",
+      "Press temp unit button 3 times to return to normal operation."
+    ]
+  }
+}
