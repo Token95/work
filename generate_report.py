@@ -20,7 +20,8 @@ SMARTCON_DARK   = colors.HexColor("#1A1A1A")
 SMARTCON_GRAY   = colors.HexColor("#666666")
 SMARTCON_LIGHT  = colors.HexColor("#F5F5F5")
 
-LOGO_PATH = "smartcon_logo.png"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+LOGO_PATH = os.path.join(BASE_DIR, "smartcon_logo.png")
 
 # =====================================================================
 # STYLES
@@ -33,18 +34,18 @@ def build_styles():
         "title": ParagraphStyle(
             "title",
             fontName="Helvetica-Bold",
-            fontSize=22,
+            fontSize=24,
             textColor=SMARTCON_GREEN,
-            spaceAfter=6,
-            alignment=TA_LEFT,
+            spaceAfter=8,
+            alignment=TA_CENTER,
         ),
         "subtitle": ParagraphStyle(
             "subtitle",
-            fontName="Helvetica",
-            fontSize=13,
+            fontName="Helvetica-Bold",
+            fontSize=14,
             textColor=SMARTCON_DARK,
             spaceAfter=4,
-            alignment=TA_LEFT,
+            alignment=TA_CENTER,
         ),
         "section_header": ParagraphStyle(
             "section_header",
@@ -113,7 +114,7 @@ def on_page(canvas, doc):
     canvas.drawCentredString(
         width / 2,
         0.35 * inch,
-        f"SMARTCON SOLUTIONS  |  Field Commissioning Job Aid  |  "
+       f"SMARTCON SOLUTIONS  |  Field Operations Manual  |  "
         f"Generated {datetime.date.today().strftime('%B %d, %Y')}  |  Page {doc.page}"
     )
 
@@ -213,7 +214,7 @@ def build_binding_steps(profile, styles):
 # MAIN REPORT GENERATOR
 # =====================================================================
 
-def generate_report(extracted_data, profile, output_path="Smartcon_Field_Job_Aid.pdf"):
+def generate_report(extracted_data, profile, rooms=None, floor_summary=None, output_path="Smartcon_Field_Ops_Manual.pdf"):
     styles = build_styles()
     doc = SimpleDocTemplate(
         output_path,
@@ -228,25 +229,54 @@ def generate_report(extracted_data, profile, output_path="Smartcon_Field_Job_Aid
 
     # --- COVER: LOGO ---
     if os.path.exists(LOGO_PATH):
-        logo = Image(LOGO_PATH, width=2.2 * inch, height=0.6 * inch)
-        logo.hAlign = "LEFT"
+        print(f"[+] Logo loaded: {LOGO_PATH}")
+        logo = Image(LOGO_PATH, width=3.2 * inch, height=0.85 * inch)
+        logo.hAlign = "CENTER"
         elements.append(logo)
     else:
+        print(f"[-] Logo not found at: {LOGO_PATH}")
         elements.append(Paragraph("SMARTCON SOLUTIONS", styles["title"]))
+
+    elements.append(Spacer(1, 20))
+
+    # --- COVER: TITLE ---
+    elements.append(Paragraph("Field Operations Manual", ParagraphStyle(
+        "cover_title",
+        fontName="Helvetica-Bold",
+        fontSize=24,
+        textColor=SMARTCON_GREEN,
+        spaceAfter=10,
+        alignment=TA_CENTER,
+    )))
 
     elements.append(Spacer(1, 10))
 
-    # --- COVER: TITLES ---
-    elements.append(Paragraph("Field Commissioning Job Aid", styles["title"]))
-    elements.append(Paragraph(
-        extracted_data.get("Hotel", "Property Name Not Found"),
-        styles["subtitle"]
-    ))
-    elements.append(Paragraph(
-        extracted_data.get("City", ""),
-        styles["body"]
-    ))
-    elements.append(Spacer(1, 4))
+    # --- COVER: HOTEL NAME ---
+    hotel = extracted_data.get("Hotel", "")
+    city  = extracted_data.get("City", "")
+
+    if hotel and hotel != "Not found":
+        elements.append(Paragraph(hotel, ParagraphStyle(
+            "cover_hotel",
+            fontName="Helvetica-Bold",
+            fontSize=14,
+            textColor=SMARTCON_DARK,
+            spaceAfter=6,
+            alignment=TA_CENTER,
+        )))
+
+    # --- COVER: CITY ---
+    if city and city != "Not found" and len(city) < 35:
+        elements.append(Paragraph(city, ParagraphStyle(
+            "cover_city",
+            fontName="Helvetica",
+            fontSize=11,
+            textColor=SMARTCON_GRAY,
+            spaceAfter=4,
+            alignment=TA_CENTER,
+        )))
+
+    elements.append(Spacer(1, 20))
     elements.append(HRFlowable(
         width="100%", thickness=2,
         color=SMARTCON_GREEN, spaceAfter=10
@@ -260,7 +290,7 @@ def generate_report(extracted_data, profile, output_path="Smartcon_Field_Job_Aid
         f"Service ID: SRV-{datetime.date.today().strftime('%Y%m%d')}-AUTO"
     )
     elements.append(Paragraph(meta, styles["footer"]))
-    elements.append(Spacer(1, 14))
+    elements.append(Spacer(1, 20))
 
     # --- SECTION 1: PROJECT DATA TABLE ---
     elements.append(Paragraph("1.  Site Submittal Extraction", styles["section_header"]))
@@ -284,6 +314,70 @@ def generate_report(extracted_data, profile, output_path="Smartcon_Field_Job_Aid
         ))
         elements.append(Spacer(1, 8))
         elements.extend(build_binding_steps(profile, styles))
+
+   # --- SECTION 3: ROOM MATRIX ---
+    if rooms:
+        elements.append(PageBreak())
+        elements.append(Paragraph("3.  Room Matrix", styles["section_header"]))
+        elements.append(HRFlowable(
+            width="100%", thickness=0.5,
+            color=SMARTCON_YELLOW, spaceAfter=6
+        ))
+
+        # Floor summary table
+        elements.append(Paragraph("Floor Summary", styles["section_header"]))
+        summary_data = [["Floor", "Room Count"]]
+        total = 0
+        for floor, count in sorted(floor_summary.items()):
+            summary_data.append([f"Floor {floor}", str(count)])
+            total += count
+        summary_data.append(["TOTAL", str(total)])
+
+        summary_table = Table(summary_data, colWidths=[2.0 * inch, 2.0 * inch])
+        summary_table.setStyle(TableStyle([
+            ("BACKGROUND",   (0, 0), (-1, 0),  SMARTCON_GREEN),
+            ("TEXTCOLOR",    (0, 0), (-1, 0),  colors.white),
+            ("FONTNAME",     (0, 0), (-1, 0),  "Helvetica-Bold"),
+            ("BACKGROUND",   (0, -1), (-1, -1), SMARTCON_YELLOW),
+            ("FONTNAME",     (0, -1), (-1, -1), "Helvetica-Bold"),
+            ("ROWBACKGROUNDS", (0, 1), (-1, -2), [colors.white, SMARTCON_LIGHT]),
+            ("GRID",         (0, 0), (-1, -1), 0.4, colors.HexColor("#CCCCCC")),
+            ("ALIGN",        (0, 0), (-1, -1), "CENTER"),
+            ("TOPPADDING",   (0, 0), (-1, -1), 5),
+            ("BOTTOMPADDING",(0, 0), (-1, -1), 5),
+        ]))
+        elements.append(summary_table)
+        elements.append(Spacer(1, 14))
+
+        # Full room list by floor
+        elements.append(Paragraph("Full Room List", styles["section_header"]))
+
+        floors = sorted(set(r["floor"] for r in rooms))
+        for floor in floors:
+            floor_rooms = [str(r["room_number"]) for r in rooms if r["floor"] == floor]
+            elements.append(Paragraph(f"Floor {floor}", styles["label"]))
+
+            # Build rows of 10 rooms each
+            row_size = 10
+            room_rows = [floor_rooms[i:i+row_size] for i in range(0, len(floor_rooms), row_size)]
+
+            # Pad last row
+            for row in room_rows:
+                while len(row) < row_size:
+                    row.append("")
+
+            room_table = Table(room_rows, colWidths=[0.65 * inch] * row_size)
+            room_table.setStyle(TableStyle([
+                ("ROWBACKGROUNDS", (0, 0), (-1, -1), [colors.white, SMARTCON_LIGHT]),
+                ("GRID",    (0, 0), (-1, -1), 0.4, colors.HexColor("#CCCCCC")),
+                ("ALIGN",   (0, 0), (-1, -1), "CENTER"),
+                ("FONTNAME",(0, 0), (-1, -1), "Helvetica"),
+                ("FONTSIZE",(0, 0), (-1, -1), 9),
+                ("TOPPADDING",    (0, 0), (-1, -1), 4),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+            ]))
+            elements.append(room_table)
+            elements.append(Spacer(1, 8))     
 
     # --- BUILD ---
     doc.build(elements, onFirstPage=on_page, onLaterPages=on_page)

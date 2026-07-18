@@ -14,80 +14,149 @@
       "equipment_id": ["Equipment_Code", "Equip_ID", "HVAC_Type", "Config_Code"]
     },
     "equipment_code_lookup": {
-      "digit_1_compressor":{
-        "0": "No Electric Heat",
+      "digit_1_compressor": {
+        "0": "No Compressor",
         "1": "Heat Pump",
-        "2": " Air Conditioner"
+        "2": "Air Conditioner"
       },
-      "digit_2_electric_heat":{
+      "digit_2_electric_heat": {
         "0": "No Electric Heat",
-        "1": "Electrtic Heat"
+        "1": "Electric Heat"
       },
-      "digit_3_reverse_valve":{
+      "digit_3_reversing_valve": {
         "0": "O/B Contact energized to Cool",
         "1": "O/B Contact energized to Heat"
       },
-      "digit_4_fan_speed":{
+      "digit_4_fan_speed": {
         "0": "N/A",
         "1": "One Fan Speed",
         "2": "Two Fan Speeds",
         "3": "Three Fan Speeds"
       }
     },
-    "sensor_config" :{
-      "Notes": [
-        "Thermostat and HVAC unit must be powered Before starting",
-        "Thermostat faceplate must be removed.",
-        "Configuration screens have been a 30-second timeout - if no action is taken thermostat exits configuration.",
-        "OCC default setting - 1 on VX4."
+    "known_codes": {
+      "0101": "No Compressor, Electric Heat, GL only",
+      "0102": "No Compressor, Electric Heat, GL+GH",
+      "0103": "No Compressor, Electric Heat, GL+GM+GH",
+      "1001": "Heat Pump, No Heat, O-Valve, One Speed",
+      "1002": "Heat Pump, No Heat, O-Valve, GL+GH",
+      "1011": "Heat Pump, No Heat, B-Valve, One Speed",
+      "1012": "Heat Pump, No Heat, B-Valve, GL+GH",
+      "1101": "Heat Pump, Electric Heat, O-Valve, One Speed",
+      "1102": "Heat Pump, Electric Heat, O-Valve, GL+GH",
+      "1111": "Heat Pump, Electric Heat, B-Valve, One Speed",
+      "1112": "Heat Pump, Electric Heat, B-Valve, GL+GH",
+      "2001": "AC, No Heat, No Reversing, One Speed",
+      "2002": "AC, No Heat, No Reversing, GL+GH",
+      "2003": "AC, No Heat, GM, GL+GM+GH",
+      "2101": "AC, Electric Heat, No Reversing, One Speed",
+      "2102": "AC, Electric Heat, No Reversing, GL+GH",
+      "2103": "AC, Electric Heat, GM, GL+GM+GH",
+      "2502": "FCU 2-Pipe, Y1+W1+W2, GL+GH",
+      "5501": "FCU 4-Pipe, Y1+Y2+W1+W2, GH",
+      "5502": "FCU 4-Pipe, Y1+Y2+W1+W2, GH"
+    }
+  },
+  "sensor_config": {
+    "notes": [
+      "Thermostat and HVAC unit must be powered before starting.",
+      "Thermostat faceplate must be removed.",
+      "Configuration screens have a 30-second timeout. If no action is taken the thermostat exits configuration.",
+      "OCC default setting = 1 on VX4."
+    ],
+    "occ_trailing_digit": {
+      "0": "Occupancy Disabled / Door Switch Disabled / Temp Sensor Disabled",
+      "1": "Occupancy Enabled / Door Switch Normally Closed / Temp Sensor Master",
+      "2": "Door Switch Normally Open / Temp Sensor Average"
+    },
+    "pairing_a_sensor": {
+      "description": "Pair a new occupancy sensor, door switch, or temperature sensor to the thermostat",
+      "steps": [
+        "Press and hold SYSTEM MODE and FAN buttons to access Mesh ID screen.",
+        "Press and hold SYSTEM MODE and FAN buttons again until 'ZbEE' appears.",
+        "Press SETTINGS button until 'SENS' appears.",
+        "Press the button on the sensor to activate pairing.",
+        "Press FAN button on thermostat to initiate pairing of a new sensor. This starts a 10-second countdown and displays the last 5 digits of discovered sensor IDs.",
+        "Use UP/DOWN buttons to toggle between discovered sensors.",
+        "Ensure the unique device ID on screen matches the unique device ID on the sensor.",
+        "Press SETTINGS button when the UniqueID (numerical) appears.",
+        "Select 'OCC1' for occupancy sensor, 'DS1' for door switch, 'rt1' for master temp sensor, 'rt2' for average temp sensor, or '0' to disable.",
+        "Press SETTINGS button. A 30-second countdown will begin. 'SUcc' will show when successfully paired.",
+        "If pairing fails press SYSTEM MODE button to try again."
+      ]
+    },
+    "configuring_sensor_functionality": {
+      "description": "Set or change what role a paired sensor plays after it is already linked",
+      "steps": [
+        "Press and hold SYSTEM MODE and FAN buttons until Mesh ID appears.",
+        "Press and hold SYSTEM MODE and FAN buttons again until 'ZbEE' appears.",
+        "Press SETTINGS button until 'SENS' appears.",
+        "Press SETTINGS button to display the number of linked sensors.",
+        "Press SETTINGS button again to display the UniqueID of paired sensors. Use UP/DOWN to cycle through them.",
+        "Press SETTINGS button again. 'OCC1' will appear. Use UP/DOWN to change digits based on the OCC trailing digit table.",
+        "Press SETTINGS button to configure Door Switch functionality (dsx). Set to Normally Open (NO) or Normally Closed (NC) depending on reed switch type.",
+        "Press SETTINGS button to configure Temperature Sensor functionality (rtx).",
+        "Press SETTINGS button to finalize pairing."
+      ]
+    },
+    "verifying_and_unlinking_sensors": {
+      "description": "Check how many sensors are communicating or remove a linked sensor",
+      "steps": [
+        "Press and hold SYSTEM MODE and FAN buttons until Mesh ID appears.",
+        "Press and hold SYSTEM MODE and FAN buttons again until 'ZbEE' appears.",
+        "Press SETTINGS button until 'SENS' appears.",
+        "Press SETTINGS button. Thermostat initiates a 10-second countdown then displays linked sensor count (e.g. '02.02' means 2 of 2 sensors communicating).",
+        "Press SETTINGS to display the first linked sensor. Use UP/DOWN to cycle through linked sensors.",
+        "To unlink: select the sensor then press and hold SETTINGS. A 5-second countdown will begin then display total number of linked sensors remaining.",
+        "Press SYSTEM MODE button to exit this configuration menu.",
+        "To reset the sensor: press the button on the sensor for 3 seconds until a yellow light turns on. The sensor is now reset and can be paired again."
+      ]
+    },
+    "occupancy_relay_invert": {
+      "description": "Changes occupancy relay from default 12V on Unoccupied to 12V on Occupied",
+      "steps": [
+        "From room temperature screen press and hold CONFIG and FAN buttons to reach n0001 screen.",
+        "Press Gear Icon button until schedule screen appears.",
+        "Press and hold CONFIG and FAN buttons to advance to rSt screen.",
+        "Press and hold CONFIG and FAN buttons to advance to bt2.0u screen.",
+        "Press and hold CONFIG and FAN buttons to advance to OCC screen.",
+        "Press Gear Icon button to advance to nc screen.",
+        "Press DOWN button to advance to 'no' on screen.",
+        "Press ON/OFF button to save changes."
+      ]
+    },
+    "door_lock_integration": {
+      "description": "Verdant VX4 wired and wireless door lock pairing procedure",
+      "lock_platforms": {
+        "oni": "Onity",
+        "kaba": "Dormakaba"
+      },
+      "integration_types": {
+        "one_way": "Door locks must be networked and communicating with a Door Lock Management System for thermostat integration.",
+        "two_way": "Thermostat acts as the network. Door locks are not required to be networked. A ZigBee coordinator is required for wired/wireless integration."
+      },
+      "notes": [
+        "Integration with dormakaba requires ebox and dorma server setup and communicating.",
+        "Remove faceplate from thermostat before starting procedure.",
+        "Wireless: countdown appears on screen to confirm pairing to control card.",
+        "Wired: no countdown appears.",
+        "Dorma locks display as lock's respective short ZigBee ID.",
+        "Onity locks display as lock's respective serial number."
       ],
-      "occ_trailing_digit": {
-        "0": "Occupancy Disabled / Door Switch Disabled / Temp Sensor Disabled",
-        "1": "Occupany Enabled / Door Switch Normally CLosed / Temp Sensor Master",
-        "2": "Door Switch Normally Open / Temp Sensor Average"
-      },
-      "pairing_a_sensor":{
-        "description": "Pair a New occupancy sensor, door switch, or temperature sensor to the thermostat",
-        "steps": [
-          "Press and hold SYSTEM MODE and FAN buttons to access Mesh ID screen.",
-          "Press and Hold SYSTEM MODE and FAN buttons again untill 'ZbEE' apperars.",
-          "Press SETTINGS button untill 'SENS' appears.",
-          "Press the butoon on the sensor to activate pairing.",
-          "Press FAN button on the thermostat to initiate pariing of a  new sensor. This starts a 10-second countdown and displays the last 5 digits of discovered sensor ID",
-          "Use UP/DOWN buttons to toggle between discovered sensors.",
-          "Ensure the unique device ID on screen matches the unique device ID on the sensor.",
-          "Press SETTINGS button when the Unique ID (numerical) apperars.",
-          "Select 'OCC1' for occupancy sensor, 'DS1' for door switch, 'rt1' for master temp sensor, 'rt2' for average temp sensor, or '0' to disable.",
-          "Press SETTINGS button - a 30-seconds countdown will begin. 'SUcc' will show when successfully paired.",
-          "If pairing fails press SYSTEM MODE button to try again."
-        ]
-      },
-      "configuring_sensor_fuctionality": {
-        "description": "Set or change role a paired sensor plays after it is already linked",
-        "steps": [
-          "Press and hold SYSTEM MODE and FAN until Mesh ID screen appears.",
-          "Press and Hold SYSTEM MODE and FAN buttons again untill 'ZbEE' apperars.",
-          "Press SETTINGS button untill 'SENS' appears.",
-          "Press SETTINGS button to display th enumber of linked sensors.",
-          "Press SETTINGS button again to display the UniqueID of paired sensors. Use UP/DOWN to cycle through them.",
-          "Press SETTINGS button again. 'OCC1' will appear -use UP/DOWN to change digits based on the OCC trailing digit table.",
-          "Press SETTINGS buttion to configure Door Switch functionality (dsx). Set Normally Open (NO) or Normally CLosed (NC) depending on reed switch type.",
-          "Press SETTINGS button to conffigure Temperature Sensor fuctionality (rtx).",
-          "Press SETTINGS button to finalize paring."
-        ]
-      },
-      "verifying_and_unlinking_sensors": {
-        "description": "Check how many sensors are communicating or remove a linked sensor",
-        "steps": [
-            "Press and hold SYSTEM MODE and FAN buttons until Mesh ID appears.",
-            "Press and hold SYSTEM MODE and FAN buttons again until 'ZbEE' appears.",
-            "Press SETTINGS button until 'SENS' appears.",
-            "Press SETTINGS button. Thermostat initiates a 10-second countdown then displays linked sensor count (e.g. '02.02' means 2 of 2 sensors communicating).",
-            "Press SETTINGS to display the first linked sensor. Use UP/DOWN to cycle through linked sensors.",
-            "To unlink: select the sensor then press and hold SETTINGS. A 5-second countdown will begin then display total number of linked sensors remaining.",
-            "Press SYSTEM MODE button to exit this configuration menu.",
-            "To reset the sensor: press the button on the sensor for 3 seconds until a yellow light turns on. The sensor is now reset and can be paired again."
-        ]
+      "steps": [
+        "Press and hold SYSTEM MODE and FAN buttons until MESH ID appears.",
+        "Press and hold SYSTEM MODE and FAN buttons until 'type' appears.",
+        "Press FAN button until 'Selc' shows on screen.",
+        "Press DOWN button to display 'Add' then press SETTINGS to display select list.",
+        "Press DOWN button until desired lock platform shows ('oni' or 'kaba') then press SETTINGS.",
+        "Allow countdown to complete until screen displays 'Found[1-8]'.",
+        "Use DOWN button to scroll through found devices in 'EuI_[lockid]_255' format.",
+        "Press SETTINGS to select and display '-cFg_[lockid]_255'.",
+        "Press DOWN once to display '1tag' screen then press SETTINGS to display 't---'.",
+        "Use UP/DOWN buttons to select tag number (typically t001) then press SETTINGS.",
+        "Press DOWN twice to display 'Acc' then press SETTINGS to accept.",
+        "Press SYSTEM MODE button to exit the menu system."
+      ]
     }
   },
   "binding_steps": [
@@ -101,5 +170,3 @@
     "Press the SETTINGS key a second time to lock down the RF channel binding parameters."
   ]
 }
-
-  

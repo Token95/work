@@ -3,6 +3,8 @@ import os
 import re
 import json
 from generate_report import generate_report
+from room_reader import read_room_list, print_room_summary
+
 
 # =====================================================================
 # VENDOR SIGNATURES — scoring system
@@ -193,11 +195,17 @@ def extract_attributes(full_text, detected_vendor):
             data["Hotel"] = m.group(0).strip().split("\n")[0]
             break
 
-    # City and state
-    m = re.search(r'([A-Z][A-Za-z\s]+,\s*[A-Z]{2})', full_text)
-    if m:
-        data["City"] = m.group(1).strip()
-
+   # City and state — skip lines with known document keywords
+    skip_words = ["DIAGRAM", "DRAWING", "SHEET", "NETWORK", "BUILDING", "WIRING", "REVISION", "SMARTCON"]
+    city_matches = re.findall(r'([A-Z][A-Za-z][\w\s]{2,25},\s*[A-Z]{2})', full_text)
+    for match in city_matches:
+        cleaned = match.strip()
+        if any(word in cleaned.upper() for word in skip_words):
+            continue
+        if len(cleaned) < 35:
+            data["City"] = cleaned
+            break
+        
     # Revision
     m = re.search(r'REVISION[:\s]+(\w+)', full_text, re.IGNORECASE)
     if m:
@@ -439,6 +447,24 @@ else:
         print("\n[-] No matching commissioning profile found.")
         print("    Check vendor signatures or add a new profile.")
         
-        # Generate branded PDF report
-    output_file = f"Smartcon_Job_Aid_{data['Hotel'].replace(' ', '_')[:30]}.pdf"
-    generate_report(data, profile, output_path=output_file)
+      # --- ROOM LIST ---
+    print("\n" + "="*55)
+    print("  ROOM MATRIX INPUT")
+    print("="*55)
+    xlsx_input = input("Drop your room list Excel path here and press Enter (or press Enter to skip): ").strip('"')
+
+    rooms = []
+    floor_summary = {}
+
+    if xlsx_input and os.path.exists(xlsx_input):
+        rooms, floor_summary = read_room_list(xlsx_input)
+        print_room_summary(rooms, floor_summary, xlsx_input)
+    elif xlsx_input:
+        print("[-] Excel file not found. Continuing without room list.")
+    else:
+        print("[*] No room list provided. Continuing without room matrix.")
+
+    # --- GENERATE BRANDED PDF REPORT ---
+    hotel_clean = data['Hotel'].replace(' ', '_').replace('/', '_')[:30]
+    output_file = f"Smartcon_Field_Ops_{hotel_clean}.pdf"
+    generate_report(data, profile, rooms, floor_summary, output_path=output_file)
