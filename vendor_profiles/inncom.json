@@ -105,5 +105,30 @@
       "When closed thermostat counts open/close events. Allow count to reach at least 3 for valid test.",
       "Press temp unit button 3 times to return to normal operation."
     ]
+  },
+  "reference_images": {
+    "images_dir": "images/inncom",
+    "sections": {
+      "set_room_id": [
+        "p01_01_room_id_screen.png",
+        "p01_02_mode_button.png",
+        "p01_03_highest_digit_leds.png",
+        "p01_04_fan_button.png",
+        "p01_05_middle_digit_leds.png",
+        "p01_06_lowest_digit_leds.png"
+      ],
+      "setting_pan_id_and_rf_channel": [
+        "p01_07_pan_screen.png",
+        "p02_04_rf_screen.png"
+      ],
+      "binding_s541_rfd_occupancy_sensor": ["p02_05_pir_screen.png"],
+      "binding_k594_rf_door_sensor": ["p02_06_door_screen.png"],
+      "change_e7_address_multi_hvac_suite": ["p02_07_adr_screen.png"],
+      "checking_functionality": [
+        "p02_01_fc_button.png",
+        "p02_02_up_arrow.png",
+        "p02_03_down_arrow.png"
+      ]
+    }
   }
 }

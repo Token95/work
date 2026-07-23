@@ -155,5 +155,59 @@
     "accessory_adding_failed": "Nordic search timed out (retry 2-3 times); EOS config UTI does not match Fleet Manager accessory UTI for the room type (verify UTI match); accessory hardware failure (try another accessory); VingCard DL specific issue with many nearby beacon packets (turn off surrounding EOS units during pairing).",
     "wrong_property_under_you_are_commissioning": "User is signed into the wrong organization/property context; re-select correct organization and property at sign-in.",
     "eos1_vs_eos2_in_same_building": "Replacing an EOS1 with an EOS2 (or vice versa) is not supported - only replace with same HW version. Commissioning both EOS1 and EOS2 in the same unit type is not supported. Commissioning both in the same property is not recommended due to separate config/FW file management (EOS1 X vs EOS2 X)."
+  },
+  "reference_images": {
+    "images_dir": "images/interel",
+    "sections": {
+      "installer_app_sign_in": [
+        "p20_03_app_splash_signin_screen.png",
+        "p20_02_signin_webview_screen.png",
+        "p20_01_select_organisation_screen.png",
+        "p20_05_hi_huy_scan_eos_screen.png",
+        "p20_04_hi_huy_not_authorized_screen.png"
+      ],
+      "pass_eos_into_commissioning_mode": [
+        "p19_01_ble_ready_dialog.png",
+        "p20_06_eos_powered_on_qr_screen.png"
+      ],
+      "eos_first_time_commissioning": [
+        "p21_01_commission_thermostat_photo.png",
+        "p21_02_restart_into_commissioning_dialog.png",
+        "p21_03_eos_restarting_dialog.png",
+        "p21_04_eos_discovered_connecting_progress.png",
+        "p21_05_eos_discovered_downloading_progress.png",
+        "p22_01_scanning_for_eos_screen.png",
+        "p22_02_eos_cloud_connect_diagram.png",
+        "p22_03_enter_unit_number_screen.png",
+        "p22_04_are_you_sure_unit_screen.png",
+        "p22_05_reconfirm_unit_details_screen.png",
+        "p23_01_downloading_software_warning.png",
+        "p23_02_downloading_software_progress_1.png",
+        "p23_03_downloading_software_progress_2.png",
+        "p24_02_downloading_software_progress_3.png",
+        "p23_04_commissioning_complete_screen.png",
+        "p23_05_commissioning_failed_screen.png",
+        "p24_01_eos_commissioned_restart_dialog.png"
+      ],
+      "zigbee_accessory_commissioning_general": [
+        "p23_06_device_dashboard_single.png",
+        "p23_07_restart_download_progress.png",
+        "p24_03_device_dashboard_door_contact.png",
+        "p24_04_door_contact_detail_screen.png",
+        "p24_05_adding_accessory_progress.png",
+        "p24_06_adding_accessory_done.png",
+        "p24_07_door_lock_status_screen.png",
+        "p25_01_binding_in_progress.png",
+        "p25_02_binding_successful.png",
+        "p25_03_binding_failed.png",
+        "p25_04_eos_downloading_restart.png",
+        "p25_05_testing_successful.png",
+        "p25_06_testing_failed.png",
+        "p25_07_device_dashboard_multi_1.png",
+        "p25_08_device_dashboard_multi_2.png"
+      ],
+      "vingcard_door_lock_commissioning": ["p26_01_vingcard_commissioning_flow_diagram.png"],
+      "kaba_door_lock_commissioning": ["p26_02_kaba_commissioning_flow_diagram.png"]
+    }
   }
 }

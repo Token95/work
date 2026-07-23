@@ -371,11 +371,25 @@ def build_fieldwire_project(extracted_data, rooms, floor_summary, dry_run=True):
             print(f"    No gateway tasks for {vendor}")
 
         print(f"\n  ROOMS ({len(rooms)} total)")
-        checklist = CHECKLISTS[room_checklist_key]
+      checklist = CHECKLISTS[room_checklist_key]
+        cli_commands = extracted_data.get("CLI_Commands", [])
+        cli_items = [
+            line for line in cli_commands
+            if line.strip() and not line.startswith("#")
+        ]
+
         for room in rooms[:3]:
-            print(f"    Task: Room {room['room_number']} - Floor {room['floor']} ({len(checklist)} checklist items)")
+            full_checklist = checklist + (
+                ["--- CLI COMMANDS ---"] + cli_items
+                if cli_items else []
+            )
+            print(f"    Task: Room {room['room_number']} - Floor {room['floor']} ({len(full_checklist)} checklist items)")
             for item in checklist:
                 print(f"      □ {item}")
+            if cli_items:
+                print(f"      --- CLI COMMANDS ---")
+                for cmd in cli_items:
+                    print(f"      > {cmd}")
         if len(rooms) > 3:
             print(f"    ... and {len(rooms) - 3} more rooms following the same pattern")
 
@@ -405,9 +419,18 @@ def build_fieldwire_project(extracted_data, rooms, floor_summary, dry_run=True):
 
         # Room tasks
         checklist = CHECKLISTS[room_checklist_key]
+        cli_commands = extracted_data.get("CLI_Commands", [])
+        cli_items = [
+            line for line in cli_commands
+            if line.strip() and not line.startswith("#")
+        ]
+        full_checklist = checklist + (
+            ["--- CLI COMMANDS ---"] + cli_items if cli_items else []
+        )
         for room in rooms:
             task_name = f"Room {room['room_number']} - Floor {room['floor']}"
-            create_task(project_id, task_name, checklist, tag=f"Floor {room['floor']}")
+            create_task(project_id, task_name, full_checklist, tag=f"Floor {room['floor']}")
+            
 
         print(f"\n[+] Fieldwire project build complete.")
         print(f"  Total tasks created: {1 + len(floor_summary) + len(rooms)}")

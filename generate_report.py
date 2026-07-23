@@ -1,4 +1,5 @@
 import os
+import re
 import datetime
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
@@ -156,6 +157,7 @@ def build_data_table(extracted_data, styles):
         ["RF Channel",          extracted_data.get("RF_Channel", "N/A")],
         ["Door Locks",          extracted_data.get("Door_Locks", "N/A")],
         ["Occupancy Sensors",   extracted_data.get("Occupancy_Sensors", "N/A")],
+        ["Relay",               extracted_data.get("Relay", "N/A")],
         ["Door Contact",        extracted_data.get("Door_Contact", "N/A")],
     ]
 
@@ -180,6 +182,65 @@ def build_data_table(extracted_data, styles):
     return table
 
 # =====================================================================
+# REFERENCE IMAGE BUILDER
+# =====================================================================
+
+IMAGE_CAPTION_STYLE = ParagraphStyle(
+    "img_caption",
+    fontName="Helvetica",
+    fontSize=6.5,
+    textColor=SMARTCON_GRAY,
+    alignment=TA_CENTER,
+    leading=8,
+)
+
+def build_reference_images(profile, section_key, thumb_size=1.15 * inch, cols=4):
+    """
+    Renders any device screenshots/diagrams the vendor profile ties to a given
+    binding_steps / device_matrix / sensor_config section, via the profile's
+    top-level "reference_images": {"images_dir": ..., "sections": {key: [files]}}.
+    """
+    ref = profile.get("reference_images")
+    if not ref:
+        return []
+
+    files = ref.get("sections", {}).get(section_key)
+    if not files:
+        return []
+
+    images_dir = os.path.join(BASE_DIR, "vendor_profiles", ref.get("images_dir", ""))
+
+    cells = []
+    for fname in files:
+        fpath = os.path.join(images_dir, fname)
+        if not os.path.exists(fpath):
+            continue
+        caption = re.sub(r"^p\d+_\d+_", "", os.path.splitext(fname)[0]).replace("_", " ")
+        try:
+            img = Image(fpath, width=thumb_size, height=thumb_size, kind="proportional")
+            img.hAlign = "CENTER"
+        except Exception:
+            continue
+        cells.append([img, Paragraph(caption, IMAGE_CAPTION_STYLE)])
+
+    if not cells:
+        return []
+
+    rows = [cells[i:i + cols] for i in range(0, len(cells), cols)]
+    for r in rows:
+        while len(r) < cols:
+            r.append("")
+
+    table = Table(rows, colWidths=[1.55 * inch] * cols)
+    table.setStyle(TableStyle([
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+        ("TOPPADDING", (0, 0), (-1, -1), 4),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+    ]))
+    return [Spacer(1, 4), table, Spacer(1, 6)]
+
+# =====================================================================
 # BINDING STEPS BUILDER
 # =====================================================================
 
@@ -202,11 +263,50 @@ def build_binding_steps(profile, styles):
                     elements.append(Paragraph(
                         f"{i}.  {step}", styles["step"]
                     ))
+            elements.extend(build_reference_images(profile, section))
             elements.append(Spacer(1, 8))
 
     elif isinstance(steps, list):
         for i, step in enumerate(steps, 1):
             elements.append(Paragraph(f"{i}.  {step}", styles["step"]))
+        elements.extend(build_reference_images(profile, "binding_steps"))
+
+    return elements
+
+# =====================================================================
+# DEVICE MATRIX / SENSOR CONFIG BUILDER
+# (Telkonet EcoSmart PLUS device_matrix, Verdant VX4 sensor_config — these
+# hold their own nested pairing "steps" lists outside of binding_steps.)
+# =====================================================================
+
+def build_nested_steps_section(profile, node, styles, path_prefix, title=None, depth=0):
+    elements = []
+    if not isinstance(node, dict):
+        return elements
+
+    if title:
+        style = styles["section_header"] if depth == 0 else styles["label"]
+        elements.append(Paragraph(title.replace("_", " ").title(), style))
+        if depth == 0:
+            elements.append(HRFlowable(
+                width="100%", thickness=0.5,
+                color=SMARTCON_YELLOW, spaceAfter=4
+            ))
+
+    for key, value in node.items():
+        if key in ("description", "note", "notes"):
+            continue
+        section_path = f"{path_prefix}.{key}" if path_prefix else key
+        if isinstance(value, list) and value and all(isinstance(v, str) for v in value):
+            elements.append(Paragraph(key.replace("_", " ").title(), styles["label"]))
+            for i, step in enumerate(value, 1):
+                elements.append(Paragraph(f"{i}.  {step}", styles["step"]))
+            elements.extend(build_reference_images(profile, section_path))
+            elements.append(Spacer(1, 6))
+        elif isinstance(value, dict):
+            elements.extend(build_nested_steps_section(
+                profile, value, styles, section_path, title=key, depth=depth + 1
+            ))
 
     return elements
 
@@ -214,7 +314,7 @@ def build_binding_steps(profile, styles):
 # MAIN REPORT GENERATOR
 # =====================================================================
 
-def generate_report(extracted_data, profile, rooms=None, floor_summary=None, output_path="Smartcon_Field_Ops_Manual.pdf"):
+def generate_report(extracted_data, profile, rooms=None, floor_summary=None, output_path="Smartcon_Field_Ops_Manual.pdf", preparer="Smartcon Solutions"):
     styles = build_styles()
     doc = SimpleDocTemplate(
         output_path,
@@ -285,7 +385,7 @@ def generate_report(extracted_data, profile, rooms=None, floor_summary=None, out
     # --- META LINE ---
     meta = (
         f"Generated: {datetime.date.today().strftime('%B %d, %Y')}   |   "
-        f"Prepared by: Devon Brown   |   "
+        f"Prepared by: {preparer}   |   "
         f"Revision: {extracted_data.get('Revision', 'N/A')}   |   "
         f"Service ID: SRV-{datetime.date.today().strftime('%Y%m%d')}-AUTO"
     )
@@ -315,7 +415,14 @@ def generate_report(extracted_data, profile, rooms=None, floor_summary=None, out
         elements.append(Spacer(1, 8))
         elements.extend(build_binding_steps(profile, styles))
 
-   # --- SECTION 3: ROOM MATRIX ---
+        for nested_key in ("device_matrix", "sensor_config", "gateway_coordinator"):
+            nested = profile.get(nested_key)
+            if nested:
+                elements.extend(build_nested_steps_section(
+                    profile, nested, styles, nested_key, title=nested_key, depth=0
+                ))
+
+    # --- SECTION 3: ROOM MATRIX ---
     if rooms:
         elements.append(PageBreak())
         elements.append(Paragraph("3.  Room Matrix", styles["section_header"]))
@@ -379,7 +486,51 @@ def generate_report(extracted_data, profile, rooms=None, floor_summary=None, out
             elements.append(room_table)
             elements.append(Spacer(1, 8))     
 
-    # --- BUILD ---
+# --- SECTION 4: CLI COMMANDS (Touch Combo / Rhapsody only) ---
+    cli_commands = extracted_data.get("CLI_Commands", [])
+    if cli_commands:
+        elements.append(PageBreak())
+        elements.append(Paragraph("4.  Host CLI Command Block", styles["section_header"]))
+        elements.append(HRFlowable(
+            width="100%", thickness=0.5,
+            color=SMARTCON_YELLOW, spaceAfter=6
+        ))
+        elements.append(Paragraph(
+            "Paste the following commands into the Kivy App ESP tab — one line at a time. "
+            "Run on each thermostat after joining to network.",
+            styles["body"]
+        ))
+        elements.append(Spacer(1, 8))
+
+        cli_style = ParagraphStyle(
+            "cli",
+            fontName="Courier",
+            fontSize=8,
+            textColor=SMARTCON_DARK,
+            spaceAfter=2,
+            leading=12,
+            leftIndent=12,
+            backColor=colors.HexColor("#F0F0F0"),
+        )
+
+        for line in cli_commands:
+            if line.startswith("#"):
+                elements.append(Paragraph(
+                    line,
+                    ParagraphStyle(
+                        "cli_comment",
+                        fontName="Courier",
+                        fontSize=8,
+                        textColor=SMARTCON_GRAY,
+                        spaceAfter=1,
+                        leading=12,
+                        leftIndent=12,
+                    )
+                ))
+            elif line.strip():
+                elements.append(Paragraph(line, cli_style))
+            else:
+                elements.append(Spacer(1, 4))
+
     doc.build(elements, onFirstPage=on_page, onLaterPages=on_page)
-    print(f"\n[+] Report generated: {output_path}")
-    return output_path
+    print(f"[+] Report saved locally: {os.path.abspath(output_path)}")

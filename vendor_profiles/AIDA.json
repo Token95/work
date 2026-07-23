@@ -3,10 +3,29 @@
   "room_variable": "Room_Name",
   "network_address": "Network_Channel",
   "software_tool": "Rhapsody Commissioning App (iOS / Android)",
+  "preset_command": "preset exec ##",
   "thermostat_models": ["Aida"],
   "related_devices": ["EcoContact+ (Contact+)", "EcoSense+ (Sense+)", "Ving Door Lock"],
   "network_type": "BLE (commissioning) / Proprietary wireless mesh (Secure or Non-Secure) on channel 15, 20, 25, or 26",
   "doc_revision": "Rev. 4 - Commissioning instructions corrected to include tapping the ellipsis in order to set customer settings.",
+  "terminals": {
+    "2_W":  "Heat",
+    "3_Y":  "Cool / Compressor",
+    "5":    "Unocc / Strip / Special",
+    "6_G":  "Fan",
+    "7_O":  "Damper / Fan2 / Rev O / Rev B",
+    "9_W2": "Fan3 / Strip / Damper / Comp2",
+    "A1":   "Analog Output 1 - Heat / Valve / Fan",
+    "A2":   "Analog Output 2 - Cool / Fan"
+  },
+  "relay_map": {
+    "Relay 0": 2,
+    "Relay 1": 3,
+    "Relay 2": 5,
+    "Relay 3": 6,
+    "Relay 4": 7,
+    "Relay 5": 9
+  },
   "commissioning_app_menus": {
     "main_menu": "Form a network, pair devices, use CLI commands.",
     "standard_menu": "Discover info such as site name, room name, MQTT server, and time zone.",
@@ -15,7 +34,103 @@
     "ellipsis_icon": "Menu options change based on the current screen (e.g. 'Set Customer Settings', enter Advanced Mode for CLI commands).",
     "disconnect": "Disconnect the thermostat from the commissioning app."
   },
+  "presets": {
+    "fancoil": {
+      "1":  {"type": "Fancoil", "cool": "1",     "fan": "1",     "heat": "1",     "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Fan"}},
+      "2":  {"type": "Fancoil", "cool": "1",     "fan": "1",     "heat": "1",     "lighting": "Yes", "lanai": "Yes", "damper": "Yes", "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Fan",   "7": "Damper"}},
+      "3":  {"type": "Fancoil", "cool": "1",     "fan": "2",     "heat": "1",     "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Fan 1", "7": "Fan 2"}},
+      "4":  {"type": "Fancoil", "cool": "1",     "fan": "2",     "heat": "1",     "lighting": "Yes", "lanai": "Yes", "damper": "Yes", "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Fan 1", "7": "Fan 2",  "9": "Damper"}},
+      "5":  {"type": "Fancoil", "cool": "1",     "fan": "3",     "heat": "1",     "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Fan 1", "7": "Fan 2",  "9": "Fan 3"}},
+      "6":  {"type": "Fancoil", "cool": "1",     "fan": "3",     "heat": "2",     "lighting": "No",  "lanai": "Yes", "damper": "No",  "terminals": {"2": "Heat", "3": "Cool", "5": "Strip Heat", "6": "Fan 1", "7": "Fan 2", "9": "Fan 3"}},
+      "7":  {"type": "Fancoil", "cool": "0-10V", "fan": "1",     "heat": "1",     "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Fan",   "A2": "Cool"}},
+      "8":  {"type": "Fancoil", "cool": "0-10V", "fan": "2",     "heat": "1",     "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"2": "Heat", "3": "Cool",               "6": "Fan 1", "7": "Fan 2",  "A2": "Cool"}},
+      "9":  {"type": "Fancoil", "cool": "0-10V", "fan": "1",     "heat": "0-10V", "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Fan",   "A1": "Heat",  "A2": "Cool"}},
+      "10": {"type": "Fancoil", "cool": "0-10V", "fan": "1",     "heat": "0-10V", "lighting": "Yes", "lanai": "Yes", "damper": "Yes", "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Fan",   "7": "Damper", "A1": "Heat", "A2": "Cool"}},
+      "11": {"type": "Fancoil", "cool": "0-10V", "fan": "3",     "heat": "0-10V", "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"2": "Heat", "3": "Cool",               "6": "Fan 1", "7": "Fan 2",  "9": "Fan 3", "A1": "Heat", "A2": "Cool"}},
+      "12": {"type": "Fancoil", "cool": "0-10V", "fan": "0-10V", "heat": "1",     "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Fan",   "A1": "3sp fan", "A2": "Cool"}},
+      "13": {"type": "Fancoil", "cool": "1",     "fan": "0-10V", "heat": "0-10V", "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Fan",   "A1": "Heat",  "A2": "3sp fan"}},
+      "14": {"type": "Fancoil", "cool": "1",     "fan": "0-10V", "heat": "1",     "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Fan",   "A1": "3sp fan"}},
+      "15": {"type": "Fancoil", "cool": "2-10V", "fan": "1",     "heat": "1",     "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Fan",   "A2": "Cool"}},
+      "16": {"type": "Fancoil", "cool": "2-10V", "fan": "2",     "heat": "1",     "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"2": "Heat", "3": "Cool",               "6": "Fan 1", "7": "Fan 2",  "A2": "Cool"}},
+      "17": {"type": "Fancoil", "cool": "2-10V", "fan": "1",     "heat": "2-10V", "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Fan",   "A1": "Heat",  "A2": "Cool"}},
+      "18": {"type": "Fancoil", "cool": "2-10V", "fan": "1",     "heat": "2-10V", "lighting": "Yes", "lanai": "Yes", "damper": "Yes", "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Fan",   "7": "Damper", "A1": "Heat", "A2": "Cool"}},
+      "19": {"type": "Fancoil", "cool": "2-10V", "fan": "3",     "heat": "2-10V", "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Fan 1", "7": "Fan 2",  "9": "Fan 3", "A1": "Heat", "A2": "Cool"}},
+      "20": {"type": "Fancoil", "cool": "2-10V", "fan": "2-10V", "heat": "1",     "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Fan",   "A1": "3sp fan", "A2": "Cool"}},
+      "21": {"type": "Fancoil", "cool": "1",     "fan": "2-10V", "heat": "2-10V", "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Fan",   "A1": "Heat",  "A2": "3sp fan"}},
+      "22": {"type": "Fancoil", "cool": "1",     "fan": "2-10V", "heat": "1",     "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Fan",   "A1": "3sp fan"}},
+      "23": {"type": "Fancoil", "cool": "1",     "fan": "2-10V", "heat": "1",     "lighting": "Yes", "lanai": "Yes", "damper": "No",  "note": "Rev polarity W", "terminals": {"2": "Heat INV", "3": "Cool", "5": "Unocc", "6": "Fan", "A1": "3sp fan"}},
+      "24": {"type": "Fancoil", "cool": "2-10V", "fan": "2",     "heat": "2-10V", "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Fan 1", "7": "Fan 2",  "A1": "Heat", "A2": "Cool"}},
+      "25": {"type": "Fancoil", "cool": "0-10V", "fan": "1",     "heat": "0-10V", "lighting": "Yes", "lanai": "Yes", "damper": "Yes", "note": "2 Pipe", "terminals": {"3": "Valve", "5": "Unocc", "6": "Fan", "7": "Damper", "A1": "Valve"}},
+      "26": {"type": "Fancoil", "cool": "0-10V", "fan": "3",     "heat": "0-10V", "lighting": "No",  "lanai": "Yes", "damper": "No",  "note": "2 Pipe", "terminals": {"3": "Valve", "5": "Unocc", "6": "Fan 1", "7": "Fan 2", "9": "Fan 3", "A1": "Valve"}},
+      "27": {"type": "Fancoil", "cool": "2-10V", "fan": "1",     "heat": "2-10V", "lighting": "Yes", "lanai": "Yes", "damper": "Yes", "note": "2 Pipe", "terminals": {"3": "Valve", "5": "Unocc", "6": "Fan", "7": "Damper", "A1": "Valve"}},
+      "28": {"type": "Fancoil", "cool": "2-10V", "fan": "3",     "heat": "2-10V", "lighting": "Yes", "lanai": "Yes", "damper": "No",  "note": "2 Pipe", "terminals": {"3": "Valve", "5": "Unocc", "6": "Fan 1", "7": "Fan 2", "9": "Fan 3", "A1": "Valve"}},
+      "29": {"type": "Fancoil", "cool": "1",     "fan": "1",     "heat": "1",     "lighting": "Yes", "lanai": "Yes", "damper": "Yes", "note": "2 Pipe", "terminals": {"3": "Valve", "5": "Unocc", "6": "Fan", "7": "Damper"}},
+      "30": {"type": "Fancoil", "cool": "1",     "fan": "3",     "heat": "1",     "lighting": "Yes", "lanai": "Yes", "damper": "No",  "note": "2 Pipe", "terminals": {"3": "Valve", "5": "Unocc", "6": "Fan 1", "7": "Fan 2", "9": "Fan 3"}},
+      "31": {"type": "Fancoil", "cool": "0-10V", "fan": "2",     "heat": "0-10V", "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Fan 1", "7": "Fan 2",  "A1": "Heat", "A2": "Cool"}},
+      "32": {"type": "Fancoil", "cool": "1",     "fan": "0-10V", "heat": "1",     "lighting": "Yes", "lanai": "Yes", "damper": "No",  "note": "Rev polarity W", "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Fan", "A1": "3sp fan"}},
+      "34": {"type": "Fancoil - 6 way valve", "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Damper", "7": "6 Way Valve"}},
+      "35": {"type": "Fancoil", "cool": "1", "fan": "3", "heat": "1", "note": "Fan Low when Idle and Occupied", "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Fan 1", "7": "Fan 2", "9": "Fan 3"}},
+      "36": {"type": "Fancoil Open/Closed", "cool": "1", "fan": "3", "heat": "0", "lighting": "Yes", "terminals": {"3": "Cool off", "5": "Unocc", "6": "Fan 1", "7": "Fan 2", "9": "Fan 3"}},
+      "37": {"type": "Fancoil Open/Closed", "cool": "0", "fan": "3", "heat": "1", "lighting": "Yes", "terminals": {"2": "Heat", "5": "Heat off", "6": "Unocc", "7": "Fan 1", "9": "Fan 2"}},
+      "38": {"type": "Fancoil Open/Closed", "cool": "1", "fan": "2", "heat": "1", "lighting": "No",  "terminals": {"2": "Heat", "3": "Cool", "5": "Cool off", "6": "Fan 1", "7": "Fan 2", "A1": "Heat off"}},
+      "39": {"type": "Fancoil Open/Closed", "cool": "1", "fan": "1", "heat": "1", "lighting": "Yes", "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Fan", "A1": "Cool off", "A2": "Heat off"}},
+      "40": {"type": "Fancoil Open/Closed", "cool": "1", "fan": "0-10V", "heat": "1", "lighting": "Yes", "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Fan", "A1": "Cool off", "A2": "Heat off 3sp fan"}},
+      "41": {"type": "Fancoil", "cool": "1", "fan": "3", "heat": "1", "note": "2 Pipe aquastat", "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Fan 1", "7": "Fan 2", "9": "Fan 3"}},
+      "42": {"type": "Fancoil", "cool": "1", "fan": "2", "heat": "1", "note": "2 Pipe aquastat", "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Fan 1", "7": "Fan 2"}},
+      "43": {"type": "Fancoil", "cool": "1", "fan": "1", "heat": "1", "note": "2 Pipe aquastat", "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Fan"}},
+      "44": {"type": "Fancoil", "cool": "0-10V", "fan": "3", "heat": "0-10V", "lighting": "Yes", "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Fan 1", "7": "Fan 2", "9": "Fan 3", "A1": "Heat", "A2": "Cool"}}
+    },
+    "split_ptac": {
+      "51": {"type": "Split/PTAC", "cool": "1", "fan": "1", "heat": "1/2", "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Fan"}},
+      "52": {"type": "Split/PTAC", "cool": "1", "fan": "1", "heat": "1/2", "lighting": "Yes", "lanai": "Yes", "damper": "Yes", "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Fan",   "7": "Damper", "9": "Strip Heat"}},
+      "53": {"type": "Split/PTAC", "cool": "1", "fan": "2", "heat": "1/2", "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Fan 1", "7": "Fan 2",  "9": "Strip Heat"}},
+      "54": {"type": "Split/PTAC", "cool": "1", "fan": "1", "heat": "1/2", "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc", "6": "Fan",   "7": "Cool 2", "9": "Strip Heat"}},
+      "55": {"type": "Split/PTAC", "cool": "2", "fan": "2", "heat": "1",   "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"2": "Heat", "3": "Cool 1","5": "Unocc", "6": "Fan 1", "7": "Fan 2",  "9": "Cool 2"}},
+      "56": {"type": "Split/PTAC", "cool": "2", "fan": "2", "heat": "2",   "lighting": "No",  "lanai": "Yes", "damper": "No",  "terminals": {"2": "Heat 1","3": "Cool 1","5": "Cool 2","6": "Fan 1", "7": "Fan 2",  "9": "Heat 2"}}
+    },
+    "heat_pump": {
+      "76": {"type": "Heat Pump/PTHP", "comp": "1", "fan": "1", "strip": "1", "co": "O", "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"2": "Strip Heat", "3": "Comp", "5": "Unocc", "6": "Fan", "7": "Rev O"}},
+      "77": {"type": "Heat Pump/PTHP", "comp": "1", "fan": "1", "strip": "1", "co": "O", "lighting": "Yes", "lanai": "Yes", "damper": "Yes", "terminals": {"2": "Strip Heat", "3": "Comp", "5": "Unocc", "6": "Fan", "7": "Rev O",  "9": "Damper"}},
+      "78": {"type": "Heat Pump/PTHP", "comp": "1", "fan": "2", "strip": "1", "co": "O", "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"2": "Strip Heat", "3": "Comp", "5": "Unocc", "6": "Fan 1", "7": "Rev O", "9": "Fan 2"}},
+      "79": {"type": "Heat Pump/PTHP", "comp": "2", "fan": "1", "strip": "1", "co": "O", "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"2": "Strip Heat", "3": "Comp", "5": "Unocc", "6": "Fan", "7": "Rev O",  "9": "Comp 2"}},
+      "80": {"type": "Heat Pump/PTHP", "comp": "2", "fan": "2", "strip": "1", "co": "O", "lighting": "No",  "lanai": "Yes", "damper": "No",  "terminals": {"2": "Strip Heat", "3": "Comp 1","5": "Fan 2", "6": "Fan 1","7": "Rev O",  "9": "Comp 2"}},
+      "81": {"type": "Heat Pump/PTHP", "comp": "1", "fan": "2", "strip": "1", "co": "B", "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"2": "Strip Heat", "3": "Comp", "5": "Unocc", "6": "Fan 1","7": "Rev B",  "9": "Fan 2"}},
+      "82": {"type": "Heat Pump/PTHP", "comp": "1", "fan": "2", "strip": "1", "co": "B", "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"2": "Fan 2",      "3": "Comp", "5": "Occ",   "6": "Fan 1","7": "Rev B",  "9": "Strip"}},
+      "83": {"type": "Heat Pump/PTHP", "comp": "2", "fan": "2", "strip": "1", "co": "B", "lighting": "No",  "lanai": "Yes", "damper": "No",  "terminals": {"2": "Strip",      "3": "Comp", "5": "Fan 2", "6": "Fan 1","7": "Rev B",  "9": "Comp 2"}},
+      "84": {"type": "Heat Pump/PTHP", "comp": "2", "fan": "2", "strip": "1", "co": "B", "lighting": "No",  "lanai": "Yes", "damper": "No",  "terminals": {"2": "Strip",      "3": "Comp", "5": "Fan 2", "6": "Fan 1","7": "Rev B",  "9": "Comp 2"}}
+    },
+    "vrf": {
+      "91": {"type": "Fancoil LG VRF", "cool": "1", "fan": "3", "heat": "1", "lighting": "No",  "note": "Fan enable", "terminals": {"2": "Heat", "3": "Cool", "5": "Fan Enable", "6": "Fan 1", "7": "Fan 2", "9": "Fan 3"}},
+      "92": {"type": "Fancoil LG VRF", "cool": "1", "fan": "2", "heat": "1", "lighting": "Yes", "note": "Fan enable", "terminals": {"2": "Heat", "3": "Cool", "5": "Unocc",      "6": "Fan Enable", "7": "Fan 1", "9": "Fan 2"}}
+    },
+    "special": {
+      "101": {"type": "Special", "note": "Ving Lighting Controller - First Guest Entry 1 Sec Pulse when Switched from Unsold to Sold + Guest card swipe ES_Controller", "terminals": {"2": "FGE", "5": "Occ", "6": "Occ", "9": "Occ"}},
+      "102": {"type": "Special", "note": "Legrand Scene - shuts off any Legrand Switch joined in slots 2-12"},
+      "103": {"type": "Special", "note": "Onity Scene"},
+      "104": {"type": "Special", "note": "Legrand Scene - shuts off or turns on any Legrand Switch joined in slots 2-12 based on occupancy"}
+    }
+  },
   "binding_steps": {
+    "gateway_join": [
+      "Press Gateway button 3 times to enable Join Mode. Logo blinks for 15 minutes.",
+      "Confirm gateway shows in Rhapsody dashboard before proceeding."
+    ],
+    "thermostat_setup": [
+      "Load Thermostat Profile using Rhapsody Commissioning App (Kivy).",
+      "Load Room Number to Thermostat.",
+      "Run CLI on ESP tab in Kivy App (Do not use MISC Tab): zb -a 0x0201 0xf090 1",
+      "Set correct preset number using command: preset exec ##",
+      "Pair Door Lock (Slot 1) and confirm communication.",
+      "Pair Switch (Slot 2) and confirm communication.",
+      "Pair Occupancy Sensor (Slot 3) and confirm communication.",
+      "Confirm Thermostat reporting in Rhapsody.",
+      "Confirm Door Lock reporting in Rhapsody.",
+      "Confirm Switch reporting in Rhapsody.",
+      "Heating Test.",
+      "Cooling Test.",
+      "High Fan Test.",
+      "Low Fan Test."
+    ],
     "pre_installation_checks": [
       "Contact your Project Manager to obtain Rhapsody login credentials.",
       "Download the Rhapsody Commissioning App to an iPhone or Android device.",
@@ -157,5 +272,69 @@
     "wrong_thermostat_selected_during_commissioning": "If multiple nearby thermostats are being commissioned simultaneously, more than one may appear in the Rhapsody app discovery list - verify the correct thermostat is selected before tapping it.",
     "channel_conflicts_during_form_network": "Ensure other nearby devices/networks are not already using the same Network channel (15, 20, 25, or 26) selected during Form Network.",
     "wired_dry_contact_input": "TBD - not yet documented in this version of the guide (Appendix 1)."
+  },
+  "reference_images": {
+    "images_dir": "images/rhapsody_shared",
+    "sections": {
+      "put_thermostat_in_ble_mode": [
+        "p08_01_app_menu_labels_annotated.png",
+        "p08_02_ble_mode_button_sequence.png",
+        "p08_03_ble_icon_and_device.png",
+        "p08_04_app_scan_for_ble_devices.png"
+      ],
+      "commission_aida_thermostat": [
+        "p09_01_device_setup_screen.png",
+        "p09_02_set_customer_settings_menu_1.png",
+        "p09_03_set_customer_settings_menu_2.png",
+        "p10_01_room_name_and_apply_settings_screen.png",
+        "p10_02_settings_applied_confirmation_screen.png",
+        "p10_03_room_number_format_examples_table.png"
+      ],
+      "form_network": [
+        "p10_04_device_setup_hamburger_menu_screen.png",
+        "p10_05_pairing_side_menu_screen.png",
+        "p10_06_pairing_form_network_button_screen.png",
+        "p11_01_form_network_dialog.png",
+        "p11_02_form_network_activity_log.png",
+        "p11_03_form_network_status_screen.png"
+      ],
+      "pair_contact_plus": [
+        "p12_01_add_device_dialog_contact.png",
+        "p12_02_add_device_dialog_fields.png",
+        "p12_03_join_bind_button_photo.png",
+        "p12_04_devices_tab_empty_1.png",
+        "p12_05_devices_tab_empty_2.png",
+        "p12_06_device_pairing_countdown.png",
+        "p12_07_activity_log_add_completed.png"
+      ],
+      "identify_contact_plus_targets": [
+        "p12_08_sensor_targets_diagram.png",
+        "p12_09_sensor_press_8_times.png",
+        "p12_10_sensor_led_2_blinks.png",
+        "p12_11_touch_side_target.png",
+        "p12_12_touch_top_target.png",
+        "p12_13_activity_log_scroll.png"
+      ],
+      "pair_sense_plus": [
+        "p13_03_add_device_sense_dialog.png",
+        "p13_04_add_device_sense_fields.png",
+        "p13_06_sense_plus_photo.png",
+        "p13_07_sense_plus_battery_photo.png",
+        "p13_08_device_list_added.png"
+      ],
+      "pair_ving_door_lock": [
+        "p14_03_add_device_ving_dialog.png",
+        "p14_04_vingcard_lock_photo.png"
+      ],
+      "test_ving_pairing_debug": [
+        "p15_01_discover_card_swipe_photo.png",
+        "p15_02_emi_card_swipe_photo.png",
+        "p16_05_host_cli_ving_debug_1.png",
+        "p17_01_host_cli_ving_debug_toggle.png",
+        "p17_02_host_cli_ving_debug_0.png",
+        "p16_02_devices_list_ving.png",
+        "p16_04_devices_list_with_device.png"
+      ]
+    }
   }
 }

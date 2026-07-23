@@ -168,5 +168,48 @@
     "Press the SETTINGS key once to trigger the 30-second localized RF proximity discovery window.",
     "Confirm on-screen feedback matches the barcode label ID printed on the physical HVAC controller shell.",
     "Press the SETTINGS key a second time to lock down the RF channel binding parameters."
-  ]
+  ],
+  "reference_images": {
+    "images_dir": "images/verdant",
+    "sections": {
+      "binding_steps": [
+        "p03_01_system_mode_icon.png",
+        "p03_02_thermostat_photo.png",
+        "p03_04_fan_mode_icon.png",
+        "p04_01_increase_decrease_arrows.png",
+        "p04_02_mesh_id_screen.png",
+        "p04_03_room_number_screen.png",
+        "p04_04_equipment_code_screen.png"
+      ],
+      "sensor_config.pairing_a_sensor": [
+        "p05_02_sensor_screen.png",
+        "p05_03_occ_screen.png",
+        "p05_04_door_contact_screen.png",
+        "p05_05_remote_sensor_screen.png"
+      ],
+      "sensor_config.configuring_sensor_functionality": [
+        "p05_02_sensor_screen.png",
+        "p03_03_settings_gear_icon.png"
+      ],
+      "sensor_config.occupancy_relay_invert": [
+        "p05_01_energy_saving_screen.png",
+        "p03_03_settings_gear_icon.png"
+      ],
+      "sensor_config.door_lock_integration": [
+        "p06_01_door_lock_select_screen_1.png",
+        "p06_02_add_door_lock_screen.png",
+        "p06_03_door_lock_select_screen_2.png",
+        "p06_04_mac_address_screen.png",
+        "p06_05_found_door_lock_screen.png",
+        "p07_01_door_lock_id_1.png",
+        "p07_02_door_lock_id_2.png",
+        "p07_03_i_tag_1.png",
+        "p07_04_i_tag_2.png",
+        "p07_05_tag_number_1.png",
+        "p07_06_tag_number_2.png",
+        "p07_07_acc_1.png",
+        "p07_08_acc_2.png"
+      ]
+    }
+  }
 }

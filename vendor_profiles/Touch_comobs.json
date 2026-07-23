@@ -1,11 +1,23 @@
 {
-  "platform": "Touch Combo (VDA Group / Telkonet)",
-  "room_variable": "Room_Name",
-  "network_address": "Network_Channel",
-  "software_tool": "Rhapsody Commissioning App (iOS / Android)",
+  "platform": "Telkonet Rhapsody - Touch Combo Thermostat",
+  "room_variable": "Room_Number",
+  "network_address": "Zigbee_PAN",
+  "software_tool": "Rhapsody Commissioning App (Kivy)",
+  "preset_command": "preset exec ##",
   "thermostat_models": ["Touch Combo"],
   "related_devices": ["EcoContact+ (Contact+)", "EcoSense+ (Sense+)", "Ving Door Lock"],
   "network_type": "BLE (commissioning) / Proprietary wireless mesh (Secure or Non-Secure) on channel 15, 20, 25, or 26",
+  "doc_revision": "Rev. 4 - Commissioning instructions corrected to include tapping the ellipsis in order to set customer settings.",
+  "terminals": {
+    "W":    "Heat",
+    "Y":    "Cool / Compressor",
+    "G":    "Fan",
+    "O":    "Damper / Fan3 / Strip / Rev O / Rev B",
+    "G2":   "Fan 2 / Cool 2 / Rev O / Rev B / Comp 2",
+    "W2":   "Unocc / Occ / Strip / Cool 2",
+    "A1":   "Analog Output 1",
+    "A2":   "Analog Output 2"
+  },
   "commissioning_app_menus": {
     "main_menu": "Form a network, pair devices, use CLI commands.",
     "standard_menu": "Discover info such as site name, room name, MQTT server, and time zone.",
@@ -14,7 +26,156 @@
     "ellipsis_icon": "Menu options change based on the current screen (e.g. 'Set Customer Settings', enter Advanced Mode for CLI commands).",
     "disconnect": "Disconnect the thermostat from the commissioning app."
   },
+  "presets": {
+    "fancoil": {
+      "1":  {"type": "Fancoil", "cool": "1",     "fan": "1",     "heat": "1",     "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"W": "Heat", "Y": "Cool", "G": "Fan",   "W2": "Unocc"}},
+      "2":  {"type": "Fancoil", "cool": "1",     "fan": "1",     "heat": "1",     "lighting": "Yes", "lanai": "Yes", "damper": "Yes", "terminals": {"W": "Heat", "Y": "Cool", "G": "Fan",   "O": "Dmp",   "W2": "Unocc"}},
+      "3":  {"type": "Fancoil", "cool": "1",     "fan": "2",     "heat": "1",     "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"W": "Heat", "Y": "Cool", "G": "Fan 1", "G2": "Fan 2","W2": "Unocc"}},
+      "4":  {"type": "Fancoil", "cool": "1",     "fan": "2",     "heat": "1",     "lighting": "Yes", "lanai": "Yes", "damper": "Yes", "terminals": {"W": "Heat", "Y": "Cool", "G": "Fan",   "O": "Dmp",   "G2": "Fan 2","W2": "Unocc"}},
+      "5":  {"type": "Fancoil", "cool": "1",     "fan": "3",     "heat": "1",     "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"W": "Heat", "Y": "Cool", "G": "Fan 1", "O": "Fan 3", "G2": "Fan 2","W2": "Unocc"}},
+      "6":  {"type": "Fancoil", "cool": "1",     "fan": "3",     "heat": "2",     "lighting": "No",  "lanai": "Yes", "damper": "No",  "terminals": {"W": "Heat", "Y": "Cool", "G": "Fan 1", "O": "Fan 3", "G2": "Fan 2","W2": "Strip"}},
+      "7":  {"type": "Fancoil", "cool": "0-10V", "fan": "1",     "heat": "1",     "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"W": "Heat", "G": "Fan",  "O": "Unocc", "A2": "Cool"}},
+      "8":  {"type": "Fancoil", "cool": "0-10V", "fan": "2",     "heat": "1",     "lighting": "No",  "lanai": "Yes", "damper": "No",  "terminals": {"G": "Fan 2","O": "Fan 1","G2": "Heat", "A2": "Cool"}},
+      "9":  {"type": "Fancoil", "cool": "0-10V", "fan": "1",     "heat": "0-10V", "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"G": "Fan",  "G2": "Unocc","W2": "Occ",  "A1": "Heat", "A2": "Cool"}},
+      "10": {"type": "Fancoil", "cool": "0-10V", "fan": "1",     "heat": "0-10V", "lighting": "Yes", "lanai": "Yes", "damper": "Yes", "terminals": {"O": "Dmp",  "G": "Fan",  "G2": "Fan",  "W2": "Unocc","A1": "Heat", "A2": "Cool"}},
+      "11": {"type": "Fancoil", "cool": "0-10V", "fan": "3",     "heat": "0-10V", "lighting": "No",  "lanai": "Yes", "damper": "No",  "terminals": {"O": "Fan 3","G": "Fan 1","G2": "Fan 2","W2": "Unocc","A1": "Heat", "A2": "Cool"}},
+      "12": {"type": "Fancoil", "cool": "0-10V", "fan": "0-10V", "heat": "1",     "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"G2": "heat","W2": "Unocc","A1": "3sp fan","A2": "Cool"}},
+      "13": {"type": "Fancoil", "cool": "1",     "fan": "0-10V", "heat": "0-10V", "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"G2": "Cool","W2": "Unocc","A1": "Heat", "A2": "3sp fan"}},
+      "14": {"type": "Fancoil", "cool": "1",     "fan": "0-10V", "heat": "1",     "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"O": "Heat", "G2": "Cool","W2": "Unocc","A1": "3sp fan"}},
+      "15": {"type": "Fancoil", "cool": "2-10V", "fan": "1",     "heat": "1",     "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"W": "Heat", "G": "Fan",  "O": "Unocc", "A2": "Cool"}},
+      "16": {"type": "Fancoil", "cool": "2-10V", "fan": "2",     "heat": "1",     "lighting": "No",  "lanai": "Yes", "damper": "No",  "terminals": {"O": "Fan 2","G": "Fan 1","G2": "Heat", "A2": "Cool"}},
+      "17": {"type": "Fancoil", "cool": "2-10V", "fan": "1",     "heat": "2-10V", "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"G2": "Fan", "W2": "Unocc","A1": "Heat", "A2": "Cool"}},
+      "18": {"type": "Fancoil", "cool": "2-10V", "fan": "1",     "heat": "2-10V", "lighting": "Yes", "lanai": "Yes", "damper": "Yes", "terminals": {"O": "Dmp",  "G2": "Fan", "W2": "Unocc","A1": "Heat", "A2": "Cool"}},
+      "19": {"type": "Fancoil", "cool": "2-10V", "fan": "3",     "heat": "2-10V", "lighting": "No",  "lanai": "Yes", "damper": "No",  "terminals": {"O": "Fan 3","G": "Fan 1","G2": "Fan 2","W2": "Unocc","A1": "Heat", "A2": "Cool"}},
+      "20": {"type": "Fancoil", "cool": "2-10V", "fan": "2-10V", "heat": "1",     "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"O": "heat", "G2": "Unocc","W2": "Occ",  "A1": "3sp fan","A2": "Cool"}},
+      "21": {"type": "Fancoil", "cool": "1",     "fan": "2-10V", "heat": "2-10V", "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"G2": "Cool","W2": "Unocc","A1": "Heat", "A2": "3sp fan"}},
+      "22": {"type": "Fancoil", "cool": "1",     "fan": "2-10V", "heat": "1",     "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"O": "Heat", "G2": "Cool","W2": "Unocc","A1": "3sp fan"}},
+      "33": {"type": "Fancoil", "cool": "0-10V", "fan": "2",     "heat": "0-10V", "lighting": "Yes", "lanai": "Yes", "damper": "No",  "note": "2 speed + Occ", "terminals": {"G": "Fan 2", "O": "Fan 1","W2": "Unocc","A1": "Heat", "A2": "Cool"}},
+      "41": {"type": "Fancoil", "cool": "1",     "fan": "3",     "heat": "1",     "lighting": "Yes", "lanai": "Yes", "damper": "No",  "note": "2 Pipe aquastat", "terminals": {"W": "Heat", "Y": "Cool", "G": "Fan 1", "O": "Fan 3", "G2": "Fan 2","W2": "Unocc"}},
+      "44": {"type": "Fancoil", "cool": "0-10V", "fan": "3",     "heat": "0-10V", "lighting": "No",  "lanai": "Yes", "damper": "No",  "note": "VO levels editable via Attr", "terminals": {"O": "Fan 3","G": "Fan 2","G2": "Fan 1","A1": "Heat", "A2": "Cool"}},
+      "45": {"type": "Fancoil VRF only", "cool": "0", "fan": "0-10V", "heat": "0", "lighting": "Yes", "terminals": {"G2": "Occ", "G": "Fan",   "W2": "Unocc","A1": "3sp fan"}}
+    },
+    "split_ptac": {
+      "51": {"type": "Split/PTAC", "cool": "1", "fan": "1", "heat": "1/2", "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"W": "Heat", "Y": "Cool",   "G": "Fan",   "O": "Strip",  "W2": "Unocc"}},
+      "52": {"type": "Split/PTAC", "cool": "1", "fan": "1", "heat": "1/2", "lighting": "Yes", "lanai": "Yes", "damper": "Yes", "terminals": {"W": "Heat", "Y": "Cool",   "G": "Fan",   "O": "Strip",  "G2": "Dmp",    "W2": "Unocc"}},
+      "53": {"type": "Split/PTAC", "cool": "1", "fan": "2", "heat": "1/2", "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"W": "Heat", "Y": "Cool",   "G": "Fan",   "O": "Strip",  "G2": "Fan 2",  "W2": "Unocc"}},
+      "54": {"type": "Split/PTAC", "cool": "2", "fan": "1", "heat": "1/2", "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"W": "Heat", "Y": "Cool 1", "G": "Fan",   "O": "Strip",  "G2": "Cool 2", "W2": "Unocc"}},
+      "55": {"type": "Split/PTAC", "cool": "2", "fan": "2", "heat": "1",   "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"W": "Heat", "Y": "Cool 1", "G": "Fan",   "G2": "Cool 2","W2": "Fan 2"}},
+      "56": {"type": "Split/PTAC", "cool": "2", "fan": "2", "heat": "2",   "lighting": "No",  "lanai": "Yes", "damper": "No",  "terminals": {"W": "Heat", "Y": "Cool 1", "G": "Fan",   "O": "Strip",  "G2": "Fan 2",  "W2": "Cool 2"}}
+    },
+    "heat_pump": {
+      "76": {"type": "Heat Pump/PTHP", "comp": "1", "fan": "1", "strip": "1", "co": "O", "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"W": "Strip", "Y": "Comp", "G": "Fan",   "G2": "Rev O",  "W2": "Unocc"}},
+      "77": {"type": "Heat Pump/PTHP", "comp": "1", "fan": "1", "strip": "1", "co": "O", "lighting": "Yes", "lanai": "Yes", "damper": "Yes", "terminals": {"W": "Strip", "Y": "Comp", "G": "Fan",   "O": "Rev O",   "G2": "Damp",   "W2": "Unocc"}},
+      "78": {"type": "Heat Pump/PTHP", "comp": "1", "fan": "2", "strip": "1", "co": "O", "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"W": "Strip", "Y": "Comp", "G": "Fan",   "O": "Rev O",   "G2": "Fan 2",  "W2": "Unocc"}},
+      "79": {"type": "Heat Pump/PTHP", "comp": "2", "fan": "1", "strip": "1", "co": "O", "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"W": "Strip", "Y": "Comp", "G": "Fan",   "O": "Rev O",   "G2": "Comp 2", "W2": "Unocc"}},
+      "80": {"type": "Heat Pump/PTHP", "comp": "2", "fan": "2", "strip": "1", "co": "O", "lighting": "No",  "lanai": "Yes", "damper": "No",  "terminals": {"W": "Strip", "Y": "Comp", "G": "Fan",   "O": "Rev O",   "G2": "Comp 2", "W2": "Fan 2"}},
+      "81": {"type": "Heat Pump/PTHP", "comp": "1", "fan": "2", "strip": "1", "co": "B", "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"W": "Strip", "Y": "Comp", "G": "Fan",   "O": "Rev B",   "G2": "Fan 2",  "W2": "Unocc"}},
+      "82": {"type": "Heat Pump/PTHP", "comp": "2", "fan": "2", "strip": "0", "co": "B", "lighting": "Yes", "lanai": "Yes", "damper": "No",  "terminals": {"W": "Fan 2", "Y": "Comp", "G": "Fan",   "O": "Rev B",   "G2": "Comp 2", "W2": "Occ (INV)"}},
+      "83": {"type": "Heat Pump/PTHP", "comp": "2", "fan": "2", "strip": "1", "co": "B", "lighting": "No",  "lanai": "Yes", "damper": "No",  "terminals": {"W": "Fan 2", "Y": "Comp", "G": "Fan",   "O": "Rev B",   "G2": "Comp 2", "W2": "Strip"}}
+    },
+    "vrf": {
+      "91": {"type": "VRF", "cool": "1", "fan": "3", "heat": "1", "lighting": "No",  "note": "LG fan enable", "terminals": {"W": "Heat", "Y": "Cool", "G": "Fan 1", "O": "Fan 3", "G2": "Fan 2", "W2": "fan enable"}},
+      "92": {"type": "VRF", "cool": "1", "fan": "2", "heat": "1", "lighting": "Yes", "note": "LG fan enable", "terminals": {"W": "Heat", "Y": "Cool", "G": "fan enable", "O": "Fan 1", "G2": "Fan 2", "W2": "Unocc"}}
+    },
+    "special": {
+      "104": {"type": "Special", "note": "Turns off any zigbee switch or outlet joined in slots 2-12 when unoccupied"},
+      "105": {"type": "Special", "note": "Turns On and Off any zigbee switch or outlet joined in slots 2-12 based on occupancy change"},
+      "107": {"type": "Special", "note": "1 sec pulse on Ving FGE", "cool": "1", "fan": "2", "heat": "1", "lighting": "Yes", "terminals": {"W": "Heat", "Y": "Cool", "G": "Fan 1", "O": "FGE", "G2": "Fan 2", "W2": "Occ"}}
+    }
+  },
+  "relay_map": {
+    "Relay 0": "O/B (G3)",
+    "Relay 1": "* (W2)",
+    "Relay 2": "Y2 (G2)",
+    "Relay 3": "G",
+    "Relay 4": "W",
+    "Relay 5": "Y"
+  },
+  "device_types": {
+    "Contact+": "Door/window/lanai magnetic contact sensor (EcoContact+); has configurable Polarity, Special Function, and Door/Window or Lanai settings.",
+    "Sense+": "Occupancy/environmental sensor (EcoSense+); Door/Window or Lanai setting is not applicable.",
+    "Ving": "VingCard-compatible door lock integration; Door/Window or Lanai setting is not applicable; requires Discovery Card and EMS Card presentation to pair, and a 'ving debug' CLI test before leaving site."
+  },
+  "network_channels": [15, 20, 25, 26],
+  "network_security_modes": ["Secure", "Non-Secure"],
+  "cli_commands": {
+    "ving debug 1": "Enable debug logging on the Ving lock integration to verify event messages during testing.",
+    "ving debug 0": "Disable debug logging on the Ving lock integration once testing is complete."
+  },
+  "cloud_connection_status_mode": {
+    "availability": "Thermostats with host firmware version higher than 8.4.2.1",
+    "entry_sequence": [
+      "Up arrow",
+      "Down arrow",
+      "Up arrow",
+      "Down arrow",
+      "Up arrow and hold"
+    ],
+    "status_codes": {
+      "00": "Connected and authenticated to MQTT server",
+      "01": "No Wi-Fi credentials",
+      "02": "No MQTT configuration (hostname, user, or password)",
+      "03": "Wi-Fi and MQTT credentials exist but cannot connect to Wi-Fi",
+      "04": "Connected to Wi-Fi but could not obtain IP address",
+      "05": "Obtained IP address but no internet access (cannot ping 8.8.8.8)",
+      "06": "Have internet access but cannot connect to MQTT server (TCP connection failed)",
+      "07": "DNS lookup failed",
+      "08": "TCP connection timeout",
+      "09": "TCP connection refused",
+      "10": "Can connect to MQTT server but authentication failed",
+      "99": "Status is not yet available"
+    },
+    "wifi_signal_icons": {
+      "strikethrough": "Wi-Fi not connected",
+      "1_bar": "Wi-Fi connected with RSSI <= -70dBm",
+      "2_bars": "Wi-Fi connected with RSSI between -69dBm and -55dBm",
+      "3_bars": "Wi-Fi connected with RSSI >= -54dBm"
+    },
+    "notes": [
+      "Display auto-refreshes every 30 seconds while in cloud connection status mode.",
+      "'Enter' button is used to enter maintenance mode.",
+      "'Back' button exits to normal mode."
+    ]
+  },
+  "maintenance_mode": {
+    "description": "Entered from cloud connection status mode via the 'Enter' button.",
+    "navigation": {
+      "display": "Two large digits show the top-level menu item number (01 when first entered); preset selection is item #1.",
+      "up_down_arrows": "Increment/decrement the menu item number.",
+      "bottom_center_button": "'Enter' - enter or execute the current menu item.",
+      "bottom_left_button": "'Back' - go back one level."
+    }
+  },
+  "troubleshooting": {
+    "wifi_and_network_troubleshooting": "Available on thermostats with host firmware higher than v8.4.2.1. Enter Cloud Connection Status Mode via the button sequence in 'cloud_connection_status_mode', then read the 2-digit status code and Wi-Fi signal icon to identify where the connection is failing.",
+    "ble_mode_will_not_activate": "The Touch Combo only accepts the BLE setup and maintenance menu button sequences when the HVAC is set to Off mode - confirm the thermostat is powered off (small temperature display only) before entering the button sequence.",
+    "ving_lock_no_event_message": "If no event message appears after locking/unlocking or swiping a Staff card during 'ving debug 1' testing, swipe the EMI card at the lock reader and try the event again.",
+    "wrong_thermostat_selected_during_commissioning": "If multiple nearby thermostats are being commissioned simultaneously, more than one may appear in the Rhapsody app discovery list - verify the correct thermostat is selected before tapping it.",
+    "channel_conflicts_during_form_network": "Ensure other nearby devices/networks are not already using the same Network channel (15, 20, 25, or 26) selected during Form Network.",
+    "wired_dry_contact_input": "TBD - not yet documented in this version of the guide (Appendix 1)."
+  },
   "binding_steps": {
+
+    "thermostat_setup": [
+      "Load Customer Settings(Network) using Rhapsody Commissioning App (Kivy).",
+      "Load Room Number to Thermostat.",
+      "Click apply Customer settings  by pressing the ... on the top left of the app",
+      "Run CLI in Host CLI tab click Adavance",
+      "Set correct preset number using command: preset exec ##",
+      "Pair Door Lock (Slot 1) and confirm communication.",
+      "Pair Switch (Slot 2) and confirm communication.",
+      "Pair Occupancy Sensor (Slot 3) and confirm communication.",
+      "Go to the MiSC Tab Click on the ...  click invert relays",
+      "Check  where the lighting is being wire too or if the o/B need to be interver",
+      "Reboot the stat",
+      "Confirm Thermostat reporting in Rhapsody.",
+      "Confirm Door Lock reporting in Rhapsody.",
+      "Confirm Switch reporting in Rhapsody.",
+      "Heating Test.",
+      "Cooling Test.",
+      "High Fan Test.",
+      "Low Fan Test."
+    ],
     "pre_installation_checks": [
       "Contact your Project Manager to obtain Rhapsody login credentials.",
       "Download the Rhapsody Commissioning App to an iPhone or Android device.",
@@ -24,13 +185,10 @@
       "If applicable, obtain a list of PMS (property management system) room names from the Project Manager or Certified Partner."
     ],
     "put_thermostat_in_ble_mode": [
-      "Three-finger tap anywhere on the thermostat screen.",
-      "Tap the 'Config' button.",
-      "Enter the password provided by the Telkonet Project Manager, then tap 'Enter'.",
-      "Tap 'Commission'.",
-      "Tap 'Remote Setup'.",
-      "The 'Ready for BLE' screen appears - thermostat is now in BLE setup mode.",
-      "Tapping 'Cancel' while in BLE setup mode exits the mode."
+      "Turn OFF the thermostat by pressing the Power button until it turns off (screen shows only the temperature in small font in the upper right corner).",
+      "IMPORTANT: The thermostat will only accept the BLE setup and maintenance menu button sequences if the HVAC is set to Off mode.",
+      "Quickly tap: up arrow, down arrow, up arrow, down arrow, then hold for at least two seconds.",
+      "Result: BLE setup mode is activated - all LCD indicators turn off except the Bluetooth icon."
     ],
     "commission_touch_combo_thermostat": [
       "With the thermostat nearby and already in BLE mode, open the Rhapsody Commissioning App.",
@@ -95,41 +253,77 @@
       "Confirm a corresponding event message appears in the log; this message is required for integration with the Visionline Lock service.",
       "If no event message appears, swipe the EMI card at the lock reader and try again.",
       "Once testing is complete, turn off debugging by entering 'ving debug 0' and tapping Enter."
-    ],
-    "take_touch_combo_out_of_ble_mode": [
-      "On the Touch Combo, tap the 'Cancel' button.",
-      "Tap the back button repeatedly until returning to the main thermostat screen."
     ]
   },
-  "device_types": {
-    "Contact+": "Door/window/lanai magnetic contact sensor (EcoContact+); has configurable Polarity, Special Function, and Door/Window or Lanai settings.",
-    "Sense+": "Occupancy/environmental sensor (EcoSense+); Door/Window or Lanai setting is not applicable.",
-    "Ving": "VingCard-compatible door lock integration; Door/Window or Lanai setting is not applicable; requires Discovery Card and EMS Card presentation to pair, and a 'ving debug' CLI test before leaving site."
-  },
-  "network_channels": [15, 20, 25, 26],
-  "network_security_modes": ["Secure", "Non-Secure"],
-  "wifi_status_values": [
-    "MQTT connected",
-    "No Wi-Fi credentials",
-    "No MQTT configuration",
-    "Wi-Fi connection failed",
-    "No IP address",
-    "No internet access",
-    "TCP connection failed",
-    "DNS lookup failed",
-    "TCP connection timeout",
-    "TCP connection refused",
-    "MQTT auth failed"
-  ],
-  "cli_commands": {
-    "ving debug 1": "Enable debug logging on the Ving lock integration to verify event messages during testing.",
-    "ving debug 0": "Disable debug logging on the Ving lock integration once testing is complete."
-  },
-  "troubleshooting": {
-    "wifi_and_network_troubleshooting": "Available on thermostats with host firmware higher than v1.4.2.1. Access via: three-finger tap on thermostat screen > Config > enter password > Wi-Fi. The Wi-Fi Status screen displays one of the defined status values (see wifi_status_values) at the bottom of the screen to identify where the connection is failing.",
-    "ving_lock_no_event_message": "If no event message appears after locking/unlocking or swiping a Staff card during 'ving debug 1' testing, swipe the EMI card at the lock reader and try the event again.",
-    "wrong_thermostat_selected_during_commissioning": "If multiple nearby thermostats are being commissioned simultaneously, more than one may appear in the Rhapsody app discovery list - verify the correct thermostat is selected before tapping it.",
-    "channel_conflicts_during_form_network": "Ensure other nearby devices/networks are not already using the same Network channel (15, 20, 25, or 26) selected during Form Network.",
-    "wired_dry_contact_input": "TBD - not yet documented in this version of the guide (Appendix 1)."
+  "reference_images": {
+    "images_dir": "images/rhapsody_shared",
+    "sections": {
+      "put_thermostat_in_ble_mode": [
+        "p08_01_app_menu_labels_annotated.png",
+        "p08_02_ble_mode_button_sequence.png",
+        "p08_03_ble_icon_and_device.png",
+        "p08_04_app_scan_for_ble_devices.png"
+      ],
+      "commission_touch_combo_thermostat": [
+        "p09_01_device_setup_screen.png",
+        "p09_02_set_customer_settings_menu_1.png",
+        "p09_03_set_customer_settings_menu_2.png",
+        "p10_01_room_name_and_apply_settings_screen.png",
+        "p10_02_settings_applied_confirmation_screen.png",
+        "p10_03_room_number_format_examples_table.png"
+      ],
+      "form_network": [
+        "p10_04_device_setup_hamburger_menu_screen.png",
+        "p10_05_pairing_side_menu_screen.png",
+        "p10_06_pairing_form_network_button_screen.png",
+        "p11_01_form_network_dialog.png",
+        "p11_02_form_network_activity_log.png",
+        "p11_03_form_network_status_screen.png"
+      ],
+      "pair_contact_plus": [
+        "p12_01_add_device_dialog_contact.png",
+        "p12_02_add_device_dialog_fields.png",
+        "p12_03_join_bind_button_photo.png",
+        "p12_04_devices_tab_empty_1.png",
+        "p12_05_devices_tab_empty_2.png",
+        "p12_06_device_pairing_countdown.png",
+        "p12_07_activity_log_add_completed.png"
+      ],
+      "identify_contact_plus_targets": [
+        "p12_08_sensor_targets_diagram.png",
+        "p12_09_sensor_press_8_times.png",
+        "p12_10_sensor_led_2_blinks.png",
+        "p12_11_touch_side_target.png",
+        "p12_12_touch_top_target.png",
+        "p12_13_activity_log_scroll.png"
+      ],
+      "pair_sense_plus": [
+        "p13_03_add_device_sense_dialog.png",
+        "p13_04_add_device_sense_fields.png",
+        "p13_06_sense_plus_photo.png",
+        "p13_07_sense_plus_battery_photo.png",
+        "p13_08_device_list_added.png"
+      ],
+      "pair_ving_door_lock": [
+        "p14_03_add_device_ving_dialog.png",
+        "p14_04_vingcard_lock_photo.png"
+      ],
+      "test_ving_pairing_debug": [
+        "p15_01_discover_card_swipe_photo.png",
+        "p15_02_emi_card_swipe_photo.png",
+        "p16_05_host_cli_ving_debug_1.png",
+        "p17_01_host_cli_ving_debug_toggle.png",
+        "p17_02_host_cli_ving_debug_0.png",
+        "p16_02_devices_list_ving.png",
+        "p16_04_devices_list_with_device.png"
+      ],
+      "thermostat_setup": [
+        "p17_03_touch_combo_three_finger_tap_photo.png",
+        "p18_01_tap_config_button.png",
+        "p18_02_enter_password_screen.png",
+        "p18_03_commission_menu.png",
+        "p18_04_remote_setup_menu.png"
+      ]
+    }
   }
 }

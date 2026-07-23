@@ -350,5 +350,24 @@
   "third_party_door_locks": {
     "supported": ["Saflok", "VingCard", "Salto", "Axxess", "Control4"],
     "note": "Integration guides for door locks are found in Telkonet Partner Portal under Guides > I, O and M Guides > Installation Operation and Maintenance Guides."
+  },
+  "reference_images": {
+    "images_dir": "images/telkonet_legacy",
+    "sections": {
+      "gateway_coordinator.join_mode": ["p27_01_gateway_join_mode_photo_diagram.png"],
+      "device_matrix.EcoInsight+.join_to_gateway": ["p27_02_ecoinsight_join_to_gateway_diagram.png"],
+      "device_matrix.EcoSource+.join_to_gateway": ["p28_01_ecosource_join_to_gateway_diagram.png"],
+      "device_matrix.EcoSmart_VRF_Controller.join_to_gateway": ["p28_02_vrf_controller_join_to_gateway_diagram.png"],
+      "device_matrix.EcoContact+.join_to_EcoInsight+": ["p29_01_ecocontact_join_to_ecoinsight_diagram.png"],
+      "device_matrix.EcoSense+.join_to_EcoInsight+": ["p30_01_ecosense_join_to_ecoinsight_diagram.png"],
+      "device_matrix.EcoAir_HS.pair_to_EcoSource+": ["p31_01_ecoair_pair_to_ecosource_diagram.png"],
+      "device_matrix.EcoTouch_Plus.pair_to_EcoSource+": ["p32_01_ecotouch_pair_to_ecosource_diagram.png"],
+      "device_matrix.EcoContact+.join_to_EcoSource+": ["p33_01_ecocontact_join_to_ecosource_diagram.png"],
+      "device_matrix.EcoSense+.join_to_EcoSource+": ["p34_01_ecosense_join_to_ecosource_diagram.png"],
+      "device_matrix.EcoAir_HS.pair_to_VRF_Controller": ["p35_01_ecoair_pair_to_vrf_controller_diagram.png"],
+      "device_matrix.EcoTouch_Plus.pair_to_VRF_Controller": ["p36_01_ecotouch_pair_to_vrf_controller_diagram.png"],
+      "device_matrix.EcoContact+.join_to_VRF_Controller": ["p37_01_ecocontact_join_to_vrf_controller_diagram.png"],
+      "device_matrix.EcoSense+.join_to_VRF_Controller": ["p38_01_ecosense_join_to_vrf_controller_diagram.png"]
+    }
   }
 }

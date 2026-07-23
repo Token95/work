@@ -1,9 +1,74 @@
 import pdfplumber
 import os
+import getpass
 import re
 import json
 from generate_report import generate_report
 from room_reader import read_room_list, print_room_summary
+from sharepoint_uploader import upload_commissioning_package
+
+import os
+import getpass
+
+def get_preparer_name():
+    """
+    Try to get name from Microsoft 365.
+    Falls back to Windows username.
+    """
+    try:
+        import msal, requests
+        from smartcon_config import TENANT_ID, CLIENT_ID, CLIENT_SECRET
+
+        app = msal.ConfidentialClientApplication(
+            CLIENT_ID,
+            authority=f"https://login.microsoftonline.com/{TENANT_ID}",
+            client_credential=CLIENT_SECRET,
+        )
+        token = app.acquire_token_for_client(
+            scopes=["https://graph.microsoft.com/.default"]
+        )
+        if "access_token" not in token:
+            raise Exception("Token failed")
+
+        headers = {"Authorization": f"Bearer {token['access_token']}"}
+        r = requests.get(
+            "https://graph.microsoft.com/v1.0/users",
+            headers=headers,
+            params={
+                "$filter": "accountEnabled eq true",
+                "$select": "displayName,mail,userPrincipalName",
+                "$top": "25"
+            }
+        )
+        if r.status_code == 200:
+            users = r.json().get("value", [])
+            windows_user = os.getlogin().lower()
+
+            # Match Windows username to M365 account
+            for user in users:
+                email = user.get("mail", "") or ""
+                upn   = user.get("userPrincipalName", "") or ""
+                if windows_user in email.lower() or windows_user in upn.lower():
+                    name = user.get("displayName", windows_user)
+                    print(f"[+] Preparer identified: {name}")
+                    return name
+
+            # No match — use first result
+            if users:
+                name = users[0].get("displayName", windows_user)
+                print(f"[+] Preparer (first match): {name}")
+                return name
+
+    except Exception as e:
+        print(f"[*] M365 lookup failed: {e}")
+
+    # Final fallback
+    fallback = os.getlogin()
+    print(f"[*] Using Windows login: {fallback}")
+    return fallback
+
+# Get preparer at startup
+PREPARER_NAME = get_preparer_name()
 
 
 # =====================================================================
@@ -78,13 +143,55 @@ VENDOR_PROFILE_MAP = {
     "Verdant by Copeland":       "verdant_vx4.json",
     "Telkonet EcoSmart PLUS":    "telkonet_ecosmart_plus.json",
     "Telkonet EcoSmart Legacy":  "telkonet_legacy.json",
-    "Telkonet Rhapsody / VDA Group": "telkonet_ecosmart.json",
     "Interel GC Series":         "interel.json",
 }
+
+# "Telkonet Rhapsody / VDA Group" is a single vendor-detection bucket that
+# covers three distinct products with their own profile files. Sub-detect
+# which one the submittal is actually for.
+RHAPSODY_PRODUCT_PROFILES = {
+    "Touch Combo":  "Touch_comobs.json",
+    "Aida":         "AIDA.json",
+    "ES Controller": "Es_Controller",
+}
+
+def detect_rhapsody_product(full_text):
+    if re.search(r'\bTouch Combo\b', full_text, re.IGNORECASE):
+        return "Touch Combo"
+    if re.search(r'\bAida\b', full_text, re.IGNORECASE):
+        return "Aida"
+    if re.search(r'\bES Controller\b', full_text, re.IGNORECASE):
+        return "ES Controller"
+    return None
 
 # =====================================================================
 # EQUIPMENT CODE DETECTION (Verdant VX4)
 # =====================================================================
+
+def extract_page_text(page):
+    """
+    pdfplumber's default extract_text() clusters characters into lines by
+    page position, which scrambles rotated title-block text (e.g. a hotel
+    name printed sideways in a drawing's margin) into reversed fragments.
+    Rotated glyphs are still stored in correct reading order in page.chars,
+    so pull them out separately, grouped by column, instead of scrambling
+    them through the position-based clustering meant for upright text.
+    """
+    upright_page = page.filter(lambda obj: obj.get("upright", True))
+    text = upright_page.extract_text() or ""
+
+    rotated_chars = [c for c in page.chars if not c.get("upright", True)]
+    if rotated_chars:
+        groups = [[rotated_chars[0]]]
+        for c in rotated_chars[1:]:
+            if abs(c["x0"] - groups[-1][-1]["x0"]) > 2:
+                groups.append([c])
+            else:
+                groups[-1].append(c)
+        rotated_text = "\n".join("".join(ch["text"] for ch in g) for g in groups)
+        text += "\n" + rotated_text
+
+    return text
 
 def detect_equipment_code(full_text):
     has_W1 = bool(re.search(r'\bW1\b', full_text))
@@ -172,6 +279,7 @@ def extract_attributes(full_text, detected_vendor):
         "Grace_Period":     "Not found",
         "Door_Locks":       "Not specified",
         "Occupancy_Sensors":"Not found",
+        "Relay":            "Not found",
         "Door_Contact":     "Not found",
         "Network_Type":     "Not found",
         "PAN_ID":           "Not found",
@@ -195,9 +303,10 @@ def extract_attributes(full_text, detected_vendor):
             data["Hotel"] = m.group(0).strip().split("\n")[0]
             break
 
-   # City and state — skip lines with known document keywords
-    skip_words = ["DIAGRAM", "DRAWING", "SHEET", "NETWORK", "BUILDING", "WIRING", "REVISION", "SMARTCON"]
-    city_matches = re.findall(r'([A-Z][A-Za-z][\w\s]{2,25},\s*[A-Z]{2})', full_text)
+   # City and state — skip lines with known document keywords, plus SmartCon's
+    # own letterhead address (printed on every drawing sheet, not the project city)
+    skip_words = ["DIAGRAM", "DRAWING", "SHEET", "NETWORK", "BUILDING", "WIRING", "REVISION", "SMARTCON", "GLASTONBURY"]
+    city_matches = re.findall(r'([A-Z][A-Za-z][\w ]{2,25},[ ]*[A-Z]{2})', full_text)
     for match in city_matches:
         cleaned = match.strip()
         if any(word in cleaned.upper() for word in skip_words):
@@ -206,9 +315,14 @@ def extract_attributes(full_text, detected_vendor):
             data["City"] = cleaned
             break
         
+    # Revision, Date, Drafter, Reviewer, Page are adjacent labels in the title
+    # block. When a submittal leaves one of these value cells blank, the regex
+    # below would otherwise capture the next label's name as if it were a value.
+    TITLE_BLOCK_LABELS = {"REVISION", "DRAFTER", "REVIEWER", "DATE", "PAGE"}
+
     # Revision
     m = re.search(r'REVISION[:\s]+(\w+)', full_text, re.IGNORECASE)
-    if m:
+    if m and m.group(1).upper() not in TITLE_BLOCK_LABELS:
         data["Revision"] = m.group(1)
 
     # Date
@@ -220,11 +334,11 @@ def extract_attributes(full_text, detected_vendor):
 
     # Drafter and reviewer
     m = re.search(r'DRAFTER[:\s]+(\w+)', full_text, re.IGNORECASE)
-    if m:
+    if m and m.group(1).upper() not in TITLE_BLOCK_LABELS:
         data["Drafter"] = m.group(1)
 
     m = re.search(r'REVIEWER[:\s]+(\w+)', full_text, re.IGNORECASE)
-    if m:
+    if m and m.group(1).upper() not in TITLE_BLOCK_LABELS:
         data["Reviewer"] = m.group(1)
 
     # Thermostat model
@@ -325,9 +439,14 @@ def extract_attributes(full_text, detected_vendor):
         data["Door_Locks"] = "CELS - Brand not specified in submittal"
 
     # Occupancy sensors
-    m = re.search(r'(ZX-AOS|PIR|ZX-[\w-]+|S541[\w-]*|K594[\w-]*)', full_text, re.IGNORECASE)
+    m = re.search(r'(ZX-AOS|PIR|ZX-[\w-]+|S541[\w-]*|K594[\w-]*|X9-[\w-]+)', full_text, re.IGNORECASE)
     if m:
         data["Occupancy_Sensors"] = m.group(1).strip()
+
+    # RIB relay (Functional Devices) — used for master lighting relay control
+    m = re.search(r'\b(RIB[A-Z0-9]+)\b', full_text, re.IGNORECASE)
+    if m:
+        data["Relay"] = m.group(1).strip()
 
     # Door contact
     if re.search(r'DOOR\s*(SWITCH|CONTACT|SENSOR|CONTACT\+)', full_text, re.IGNORECASE):
@@ -376,7 +495,7 @@ else:
     with pdfplumber.open(pdf_path) as pdf:
         full_text = ""
         for page in pdf.pages:
-            full_text += page.extract_text() or ""
+            full_text += extract_page_text(page) + "\n"
 
     # Detect vendor
     detected_vendor, scores = detect_vendor(full_text)
@@ -416,6 +535,7 @@ else:
     print(f"  RF Channel         : {data['RF_Channel']}")
     print(f"  Door Locks         : {data['Door_Locks']}")
     print(f"  Occupancy Sensors  : {data['Occupancy_Sensors']}")
+    print(f"  Relay              : {data['Relay']}")
     print(f"  Door Contact       : {data['Door_Contact']}")
     print("="*55)
 
@@ -428,9 +548,25 @@ else:
         print("  No vendor signatures detected.")
 
     # Load and display matching commissioning profile
+    cmds = []
+    rhapsody_product = None
     if detected_vendor:
         print(f"\n[*] Loading commissioning profile for: {detected_vendor}")
-        profile = load_vendor_profile(detected_vendor)
+        if detected_vendor == "Telkonet Rhapsody / VDA Group":
+            rhapsody_product = detect_rhapsody_product(full_text)
+            profile_file = RHAPSODY_PRODUCT_PROFILES.get(rhapsody_product)
+            profile = None
+            if profile_file:
+                profile_path = os.path.join("vendor_profiles", profile_file)
+                if os.path.exists(profile_path):
+                    with open(profile_path, "r") as f:
+                        profile = json.load(f)
+                else:
+                    print(f"[-] Profile file not found: {profile_file}")
+            else:
+                print("[-] Could not determine which Rhapsody-family product this submittal is for.")
+        else:
+            profile = load_vendor_profile(detected_vendor)
         if profile:
             print(f"  Platform : {profile.get('platform', 'N/A')}")
             print(f"  Tool     : {profile.get('software_tool', 'N/A')}")
@@ -446,8 +582,17 @@ else:
     else:
         print("\n[-] No matching commissioning profile found.")
         print("    Check vendor signatures or add a new profile.")
-        
-      # --- ROOM LIST ---
+
+    # CLI command block is Touch Combo (Rhapsody) only — Aida and ES Controller
+    # share the same vendor-detection bucket but don't get this section.
+    if profile and rhapsody_product == "Touch Combo":
+        cli_commands = profile.get("cli_commands", {})
+        cmds = [f"{cmd} — {desc}" for cmd, desc in cli_commands.items()]
+
+    # Store CLI in data dict so PDF can include it
+    data["CLI_Commands"] = cmds
+
+    # --- ROOM LIST ---
     print("\n" + "="*55)
     print("  ROOM MATRIX INPUT")
     print("="*55)
@@ -467,4 +612,22 @@ else:
     # --- GENERATE BRANDED PDF REPORT ---
     hotel_clean = data['Hotel'].replace(' ', '_').replace('/', '_')[:30]
     output_file = f"Smartcon_Field_Ops_{hotel_clean}.pdf"
-    generate_report(data, profile, rooms, floor_summary, output_path=output_file)
+    generate_report(
+        data, profile, rooms, floor_summary,
+        output_path=output_file,
+        preparer=PREPARER_NAME
+    )
+
+    # --- SHAREPOINT UPLOAD ---
+    print("\n" + "="*55)
+    sp_choice = input("Upload to SharePoint? Y/N: ").strip().upper()
+    if sp_choice == "Y":
+        files_to_upload = []
+        if os.path.exists(output_file):
+            files_to_upload.append(output_file)
+        if xlsx_input and os.path.exists(xlsx_input):
+            files_to_upload.append(xlsx_input)
+        if pdf_path and os.path.exists(pdf_path):
+            files_to_upload.append(pdf_path)
+
+        upload_commissioning_package(data, files_to_upload)
