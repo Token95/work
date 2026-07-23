@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results — Smartcon Field Operations Engine</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f4f4f4;
+            color: #1a1a1a;
+        }
+
+        .header {
+            background: #2d5a1b;
+            color: white;
+            padding: 20px 40px;
+        }
+
+        .header h1 { font-size: 22px; font-weight: 600; }
+        .header p  { font-size: 13px; opacity: 0.8; margin-top: 4px; }
+
+        .container {
+            max-width: 960px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        }
+
+        .card h2 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2d5a1b;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f5c400;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .field-row {
+            display: flex;
+            gap: 8px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        .field-label {
+            font-weight: 600;
+            color: #444;
+            min-width: 160px;
+        }
+
+        .field-value { color: #1a1a1a; }
+
+        .floor-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        .floor-table th {
+            background: #2d5a1b;
+            color: white;
+            padding: 8px 12px;
+            text-align: left;
+        }
+
+        .floor-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .floor-table tr:nth-child(even) td { background: #f9f9f9; }
+
+        .cli-block {
+            background: #1a1a1a;
+            color: #00ff88;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            padding: 20px;
+            border-radius: 6px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre;
+            margin-top: 12px;
+        }
+
+        .cli-comment { color: #888; }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #2d5a1b;
+            color: white;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            margin-right: 12px;
+            margin-top: 8px;
+            transition: background 0.2s;
+        }
+
+        .btn:hover { background: #3d7a25; }
+
+        .btn-yellow {
+            background: #f5c400;
+            color: #1a1a1a;
+        }
+
+        .btn-yellow:hover { background: #d4a800; }
+
+        .btn-back {
+            background: #666;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-green { background: #e6f4e0; color: #2d5a1b; }
+        .badge-yellow { background: #fff8e0; color: #856000; }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>⚡ Field Operations Engine — Results</h1>
+    <p>{{ results.hotel }} &nbsp;|&nbsp; {{ results.city }} &nbsp;|&nbsp; Prepared by {{ results.preparer }}</p>
+</div>
+
+<div class="container">
+
+    <!-- PROJECT DATA -->
+    <div class="card">
+        <h2>Submittal Extraction</h2>
+        <div class="grid">
+            <div>
+                <div class="field-row"><span class="field-label">Hotel</span><span class="field-value">{{ results.hotel }}</span></div>
+                <div class="field-row"><span class="field-label">City</span><span class="field-value">{{ results.city }}</span></div>
+                <div class="field-row"><span class="field-label">Vendor</span><span class="field-value">{{ results.vendor }}</span></div>
+                <div class="field-row"><span class="field-label">Thermostat</span><span class="field-value">{{ results.thermostat }}</span></div>
+            </div>
+            <div>
+                <div class="field-row"><span class="field-label">Equipment Code</span><span class="field-value">{{ results.equipment_code }}</span></div>
+                <div class="field-row"><span class="field-label">Fan Speed</span><span class="field-value">{{ results.fan_speed }}</span></div>
+                <div class="field-row"><span class="field-label">Door Locks</span><span class="field-value">{{ results.door_locks }}</span></div>
+                <div class="field-row"><span class="field-label">PMS</span><span class="field-value">{{ results.pms }}</span></div>
+            </div>
+        </div>
+
+        {% if results.scores %}
+        <div style="margin-top:16px">
+            <strong style="font-size:13px">Vendor Detection Scores:</strong><br>
+            {% for vendor, score in results.scores.items() %}
+            <span class="badge badge-green" style="margin-top:6px;margin-right:6px">{{ vendor }}: {{ score }}</span>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- ROOM MATRIX -->
+    {% if results.floor_summary %}
+    <div class="card">
+        <h2>Room Matrix — {{ results.room_count }} Rooms Total</h2>
+        <table class="floor-table">
+            <thead>
+                <tr><th>Floor</th><th>Room Count</th></tr>
+            </thead>
+            <tbody>
+                {% for floor, count in results.floor_summary.items() %}
+                <tr><td>Floor {{ floor }}</td><td>{{ count }} rooms</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    <!-- CLI COMMANDS -->
+    {% if results.cli_lines %}
+    <div class="card">
+        <h2>Host CLI Command Block</h2>
+        <p style="font-size:13px;color:#666;margin-bottom:12px">
+            Paste into Kivy App ESP tab — one line at a time per thermostat
+        </p>
+        <div class="cli-block">{% for line in results.cli_lines %}{% if line.startswith('#') %}<span class="cli-comment">{{ line }}</span>
+{% else %}{{ line }}
+{% endif %}{% endfor %}</div>
+    </div>
+    {% endif %}
+
+    <!-- DOWNLOADS -->
+    <div class="card">
+        <h2>Download Outputs</h2>
+        <a href="/download/{{ results.output_pdf }}" class="btn">
+            ⬇ Download Field Operations Manual (PDF)
+        </a>
+        {% if results.cli_file %}
+        <a href="/download/{{ results.cli_file }}" class="btn btn-yellow">
+            ⬇ Download CLI Commands (.txt)
+        </a>
+        {% endif %}
+        <br><br>
+        <a href="/" class="btn btn-back">← Run Another Project</a>
+    </div>
+
+</div>
+
+<footer>Smartcon Solutions LLC &nbsp;|&nbsp; Field Operations Engine &nbsp;|&nbsp; Internal Use Only</footer>
+
+</body>
+</html>
+

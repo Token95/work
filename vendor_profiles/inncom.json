@@ -106,6 +106,458 @@
       "Press temp unit button 3 times to return to normal operation."
     ]
   },
+  "onity_trillium_lock_integration": {
+    "topic": "E7 to Onity Trillium 1.0 / Advance Trillium 1.0 Lock - How to Join/Pair Procedure",
+    "source_document": "AN396 E7 Onity Trillium 1.0 Lock Reference Guide, Version 1.0",
+    "overview": "Onity Trillium 1.0 locks use 1-Way RMS Communication with Onity's DirectKey Encryption Protocol. Each lock has a property-specific encryption key retrieved from Onity's CoreAPI DirectKey Server. All encrypted BLE messages are initiated FROM the lock - the E7 never initiates communication toward the lock, but must know the encryption key and lock serial# to decrypt messages sent from the lock. INNTool/EngINN is required to obtain the key/serial# from Onity and write them to the E7.",
+    "prerequisites": {
+      "required_versions": {
+        "OnPortal_application": "3.4.7.12056 or later",
+        "DirectKey_Toolkit_Desktop_app_DKT": "2.3.8.1277 or later",
+        "DirectKey_Toolkit_Mobile_app_DKT": "App 1.35.1.1230 / TRFW 4.5.1.617 or later",
+        "Trillium_1.0_Advance_Lock_firmware_Model_HT34.1BT": "DKT Ver CP:5.9,ST:3.1,AP:5.16,HW:2.0 / OnPortal 10.5",
+        "Trillium_1.0_Lock_firmware_Model_ADV3.1BT": "DKT Ver CP:5.5,ST:3.1,AP:5.13,HW:2.0 / OnPortal 10.9",
+        "E7_firmware": "1.2.51.0 (special Onity Trillium build, NOT the generic INNTool shelf software)",
+        "INNTool": "2.15.0.53 or later",
+        "EngINN": "1.10.0.53 or later"
+      },
+      "hardware_notes": {
+        "supported_thermostats": "As of 5/2026, only D1-528 thermostat, DX47 HVAC controller, and E7 thermostat support Trillium 1.0 locks",
+        "max_mounting_distance_E7_to_lock": "30 ft (9 meters) for both Trillium 1.0 and Advance Trillium 1.0",
+        "distance_issue_symptoms": [
+          "Room occupancy state not correct or not changing (E7 never receives Guest/Staff card indication)",
+          "Welcome lighting not turning on, or significant delay",
+          "If unacceptable, install wireless S541.RF or wired door switch on E7 low voltage input"
+        ]
+      },
+      "network": "PC/laptop running INNTool/EngINN must have an active internet connection so EngINN can reach Onity's CoreAPI DirectKey Server"
+    },
+    "step_0_coordination_before_installation": {
+      "description": "Required coordination between Inncom project team and Onity before any pairing can occur",
+      "steps": [
+        "Decide which rooms will have E7 + Trillium 1.0 lock, and whether each lock is Trillium 1.0 or Advance Trillium 1.0",
+        "Onity creates the project in OnPortal and adds the Locks, ensuring Lock ID's match the Room#'s used in the INNTool project",
+        "Inncom builds an INNTool project with E7 thermostats and Onity Trillium 1.0/Advance Trillium 1.0 locks defined, ensuring the list of rooms (and E7 Room ID) matches what Onity defined in OnPortal",
+        "For an EXISTING installation where locks are already installed but never BLE-paired: Onity must supply a list of Lock Room#'s/ID's and lock type; Inncom loads the existing INNProj into INNTool and creates new Room type(s) with the Trillium locks defined, then loads the updated INNProj into EngINN",
+        "An authorized member of Inncom's project team (using a shared/restricted mailbox) emails Onity Tier 3 support at mobilecredentials@honeywell.com requesting the OwnerID, API certificate + certificate password, and API Username & Password for the property. Email format: Subject = 'Directkey API Certificate for \"Property name\"'; Body = 'Hi Tier 3, Please send the OwnerID, API certificate and certificate password, API Username & Password for property \"Property name and address\"'"
+      ]
+    },
+    "step_1_create_inntool_project": {
+      "description": "Create/verify the INNTool project defines the E7 with the correct Onity Trillium lock settings (skip if already created)",
+      "steps": [
+        "Open INNTool and click 'Create New Project'",
+        "Define Project Code, Sales Representative, Property Name, Networking, and other standard settings",
+        "Click 'Add New Room Type' and step through the wizard; on the Thermostat step select 'e7 Series - e7 Thermostat with Built In Relays' as the thermostat",
+        "On the EMS Options page, select 'Electronic Door Locks (CELS) and Motion Sensor', then choose CELS Type = 'Onity Trillium 1.0' or 'Onity Trillium 1.0 Advance'",
+        "A new dropdown appears with two choices: 'Only Motion Sensor, No Door Switch' (default) or 'Door Switch'.",
+        "If 'Only Motion Sensor, No Door Switch' is chosen: Registry 9:13:8 bits KCDL(4) and DAC(3) get SET so the E7 automatically sends 0x000281 door open after a valid card use, then 0x000280 door close after the 9:13:9 AutoDoorCloseTimeout (default 8 sec) elapses.",
+        "If 'Door Switch' is chosen: a new prompt 'What type of Door Switch do you require?' appears (Wired or Wireless/S541.RF); this adds the switch/S541.RF to the BOM and Registry 9:13:8 bits KCDL(4) and DAC(3) get CLEARED so the E7 does NOT auto-send 0x000281/0x000280 - the wired switch or S541.RF reports door position instead (faster, no lock-reporting delay)",
+        "Finish the New Project wizard to create the Room Type containing the E7 and the selected Trillium lock configuration"
+      ]
+    },
+    "step_2_load_project_into_engInn": {
+      "description": "Load the project into EngINN and verify room numbering matches Onity's lock database",
+      "steps": [
+        "Load the created project .Innproj file into EngINN; add any required rooms if not already added in INNTool",
+        "CRITICAL: Confirm with Onity the list of Lock room#'s and make sure the rooms added to EngINN EXACTLY match the lock room#'s (e.g., Room 205 must exist in OnPortal, must be set into the physical lock via PPCom programmer, and the E7 in that room must be set to Room ID 205)"
+      ]
+    },
+    "step_3_onity_authentication_manager_get_key": {
+      "description": "Use EngINN's Onity Authentication Manager to download the property-specific DirectKey encryption key and the lock serial# database from Onity's CoreAPI DirectKey Server",
+      "steps": [
+        "In EngINN, click the 'Onity Authentication' button (cloud icon on the main toolbar) to open the Onity Authentication Manager window",
+        "Ensure the PC running EngINN has an active internet connection",
+        "Enter the 5 required fields obtained from Onity Tier 3 support: Onity Server, Username, Password, Owner ID, Certificate Password, plus Browse to select the Certificate file",
+        "Click 'Get Onity Details'",
+        "On success, a 'Key Fetched successfully!' dialog appears; EngINN internally stores the site-specific encryption key and downloads/stores the lock serial# for every room (the key itself is never displayed/exported)",
+        "On failure (e.g., 'Invalid Certificate or its Password'), verify all fields were entered correctly; if it persists, contact Onity Tier 3 support (mobilecredentials@honeywell.com) to verify the values",
+        "IMPORTANT: If EngINN is closed/restarted, this authentication step must be repeated - the key is not persisted between EngINN sessions and the 6 fields are not stored",
+        "Note: Before this step succeeds, the 'Write Key' button for every room's E7 is disabled"
+      ]
+    },
+    "step_4_write_key_and_config_per_room": {
+      "description": "For EACH room, go to the E7 in EngINN's Deployment Data tree and perform these sub-steps in order",
+      "steps": [
+        {
+          "step": "a. Write Key",
+          "detail": "Select the E7 for the room, click 'Write Key'. EngINN first sends a Read Device Type command to verify the device is actually an E7 and is communicating, then writes the Onity DirectKey encryption key to the E7. Success message: 'Upload Onity Secure Key completed.' If a PC503 connection error appears, verify the PC503 USB connection and RF Channel match the E7, then retry."
+        },
+        {
+          "step": "b. Verify lock serial# downloaded",
+          "detail": "In EngINN's Deployment Data section, click on the Room (not the E7 device) to open Room Summary/Room Details, and confirm the 'Onity Serial Number' field is populated with the lock's serial# (this should match the serial# shown on the lock in Onity's DKT app)."
+        },
+        {
+          "step": "c. Write Configurations OR Write Onity CELS",
+          "detail": "Click either 'Write Configurations' (writes ALL CBL32 Registry values from the INNproj, including the Onity-specific ones: 9:1 Occupancy, 9:13 CELS, 193:12 BLE/lock serial# - use this for most new E7-Trillium installs), or 'Write Onity CELS Config' (writes ONLY the Onity-specific registries 9:1, 9:13, 193:12 - originally added for Inncom Direct D1-528/DX47 support where HVAC/Fan settings are already configured locally)."
+        }
+      ]
+    },
+    "step_5_test_pairing_and_lock_communication": {
+      "description": "Verify the E7 and lock are BLE paired and reporting correctly",
+      "steps": [
+        "Confirm the BLE icon appears on the E7 display (display must be in active/non-dormant mode - press a button to wake it; also requires Registry 9:21:2 UserInteractiveModeDisplayMask bit 6 BLE to be set, which EngINN sets automatically for Trillium-configured E7s)",
+        "From the E7 service menu, use the Pn6 (Ping) parameter set to address 71 (NOT any other address) and press FAN to start; if pings succeed the E7 beeps and increments a counter every ~1 second when close to the lock (in testing at the 30 ft max distance, 50-60% of pings got replies)",
+        "Use a valid Guest or Staff card to unlock the door (optionally first place the E7 into Door Test mode - see Appendix B in the source document)",
+        "If KCDL/DAC bits are set (no external door switch): confirm you see 0x00075 CELS Card Operation followed by 0x000281 door open, then the delayed 0x000280 door close after the AutoDoorCloseTimeout",
+        "If KCDL/DAC bits are cleared (external S541.RF or wired switch installed): confirm the S541.RF/wired switch reports 0x000281 door open / 0x000280 door close directly, and the 0x00075 CELS Card Operation is reported separately by the lock",
+        "In IC3 Room View, confirm the 'Door Open' status updates correctly",
+        "Engage/disengage the lock's Deadbolt and confirm the CELS Status section on IC3 Room View shows 'DeadBolt' toggling correctly",
+        "Test Low Battery reporting: either install drained batteries in the lock, or temporarily raise Registry 9:13:0:12 (CELS_Cfg_Low_Batt_Thresh) to 255 to force a low-battery condition, confirm 'Low Lock Battery' appears in IC3's CELS Status section, then set 9:13:0:12 back to the default 14 (0x0E)",
+        "Verify HVAC and Fan speed control works bidirectionally between the E7 and IC3",
+        "Run the E7 WAN test to confirm connectivity to the Edge Router and IWAN programs"
+      ]
+    },
+    "if_e7_never_pairs_troubleshooting": {
+      "possible_causes": [
+        "Lock's 4 AA batteries are dead or low",
+        "Lock was not set up/configured correctly by Onity to communicate BLE with the E7 (verify in Onity DKT that the lock room# and serial# are correct and the lock shows Online)",
+        "The E7 and lock were never actually BLE paired",
+        "E7 CBL32 Registry settings (9:1:0:13, 9:13:0:8/9/11/12, 193:12) are not configured correctly for the specific lock type/door-switch combination - see 'registry_reference_table' below",
+        "Registry 193:12 (BLE_Setup / lock serial#) is missing or was never written - EngINN downloads the serial# list on 'Get Onity Details' but does NOT automatically push it to the E7's Registry 193:12 until 'Write Configurations' or 'Write Onity CELS Config' is clicked",
+        "E7 and lock are physically farther apart than the 30 ft recommended maximum distance"
+      ]
+    },
+    "registry_reference_table": {
+      "description": "Required CBL32 Registry values in the E7 based on lock type and whether an external door switch/S541.RF is used. Normally set automatically by EngINN based on INNTool selections.",
+      "configurations": [
+        {
+          "config_name": "Trillium 1.0 - No Door Switch or S541.RF",
+          "9:1:0:13_MotionOnlySetupFlags": "232 (0xE8) - bits ME,LEX,VCI,DisableDoor set",
+          "9:13:0:8_MasterCELSFlags": "152 (0x98) - bits ME,KCDL,DAC set",
+          "9:13:0:9_AutoCloseTimeout": "8 (0x08)",
+          "9:13:0:11_CELS_Adv_Config": "84 (0x54)",
+          "9:13:0:12_CELS_Cfg_Low_Batt_Thresh": "14 (0x0E)",
+          "193:12:0:15-18_Lock_Serial": "Lock Serial#"
+        },
+        {
+          "config_name": "Trillium 1.0 - With door switch or S541.RF",
+          "9:1:0:13_MotionOnlySetupFlags": "224 (0xE0) - bits ME,LEX,VCI set",
+          "9:13:0:8_MasterCELSFlags": "128 (0x80) - bit ME only",
+          "9:13:0:9_AutoCloseTimeout": "Value does not matter (KCDL/DAC cleared)",
+          "9:13:0:11_CELS_Adv_Config": "84 (0x54)",
+          "9:13:0:12_CELS_Cfg_Low_Batt_Thresh": "14 (0x0E)",
+          "193:12:0:15-18_Lock_Serial": "Lock Serial#"
+        },
+        {
+          "config_name": "Advance Trillium - No Door Switch or S541.RF",
+          "9:1:0:13_MotionOnlySetupFlags": "224 (0xE0) - bits ME,LEX,VCI set",
+          "9:13:0:8_MasterCELSFlags": "152 (0x98) - bits ME,KCDL,DAC set",
+          "9:13:0:9_AutoCloseTimeout": "8 (0x08)",
+          "9:13:0:11_CELS_Adv_Config": "84 (0x54)",
+          "9:13:0:12_CELS_Cfg_Low_Batt_Thresh": "14 (0x0E)",
+          "193:12:0:15-18_Lock_Serial": "Lock Serial#"
+        },
+        {
+          "config_name": "Advance Trillium - With door switch or S541.RF",
+          "9:1:0:13_MotionOnlySetupFlags": "224 (0xE0) - bits ME,LEX,VCI set",
+          "9:13:0:8_MasterCELSFlags": "128 (0x80) - bit ME only",
+          "9:13:0:9_AutoCloseTimeout": "Value does not matter (KCDL/DAC cleared)",
+          "9:13:0:11_CELS_Adv_Config": "84 (0x54)",
+          "9:13:0:12_CELS_Cfg_Low_Batt_Thresh": "14 (0x0E)",
+          "193:12:0:15-18_Lock_Serial": "Lock Serial#"
+        }
+      ]
+    },
+    "manual_dialog_commands_optional_advanced": {
+      "description": "For advanced troubleshooting only - manual read/write commands if EngINN/GUI is unavailable. Not part of normal pairing workflow.",
+      "read_9_1_0_13_MotionOnlySetupFlags": "0018C0901000D",
+      "write_9_1_0_13_MotionOnlySetupFlags": "0018D0901000DXX (XX = hex value)",
+      "read_9_13_0_8_9_11_12_combined": "0018C090D0008",
+      "write_9_13_0_8_9_11_12_combined": "0018D090D000BXXYY00ZZWW (XX=MasterCELSFlags, YY=AutoCloseTimeout, ZZ=CELS_Adv_Config, WW=Low_Batt_Thresh)",
+      "read_193_12_lock_serial": "0018CC10C000F (result bytes must be BYTE-REVERSED then converted hex-to-decimal to get the actual serial#)",
+      "create_registry_193_12_if_missing": "0018FC10C0016 (creates 22-byte registry) followed by 0018A00 (Commit)",
+      "write_193_12_lock_serial": "0018DC10C000FXXYYZZWW (XXYYZZWW = lock serial# in hex, BYTE-REVERSED order)",
+      "commit_changes": "0018A00"
+    },
+    "replacing_devices_after_initial_pairing": {
+      "replacing_the_E7": [
+        "Ensure replacement E7 is loaded with firmware v1.2.50 or later",
+        "Power down, disconnect old E7 from SmartWallPlate (SWP) - remove 2 screws, unplug 10-pin H1 harness and 8-pin H2 connector",
+        "Install replacement E7, reconnect 8-pin low voltage harness and 10-pin H1 harness, re-apply power",
+        "New E7 reads stored Registry configs from the SWP automatically (including 9:13 CELS and 193:12 BLE/serial#), but the encryption KEY is not restored this way",
+        "Re-run Step 3 (Onity Authentication Manager 'Get Onity Details') in EngINN, then click 'Write Key' for the room to push the encryption key into the new E7",
+        "If the SWP correctly restored all other registries, 'Write Configurations'/'Write Onity CELS Config' should not be needed - but test thoroughly (WAN test, Door test, guest/staff card test, deadbolt test)"
+      ],
+      "replacing_the_lock": [
+        "Onity technicians remove the old lock and install/configure the new lock using Onity DKT, OnPortal, and the PPCom programmer (updates the lock serial# tied to the Lock Room# in Onity's CoreAPI DirectKey Server)",
+        "The new lock has a different serial# than what is stored in the E7's Registry 193:12",
+        "Re-run Step 3 (Onity Authentication Manager 'Get Onity Details') in EngINN - this re-downloads the updated serial# list including the new lock's serial#",
+        "Click 'Write Key' (E7's key does not need to change, but this re-verifies E7 communication)",
+        "Click 'Write Onity CELS Config' to push the new lock serial# into Registry 193:12 of the existing E7 (Write Configurations is not required since HVAC/Fan settings on the E7 haven't changed)",
+        "Test thoroughly: WAN test, Door test, guest/staff card test, deadbolt set/clear test on IC3"
+      ]
+    }
+  },
+  "onity_serene_lock_binding": {
+    "id": "e7_onity_serene_lock_binding",
+    "title": "Onity Serene Lock and E7 Binding/Pairing Procedure",
+    "lock_type": "Onity Serene",
+    "source_doc": "AN390 Onity Serene RF Lock Reference Guide, Version 4.0",
+    "applies_to": "E7 thermostat configured as Onity Serene lock proxy only. Onity Trilium lock is NOT supported as of 7/2025.",
+    "prerequisites": [
+      "E7 loaded with E7_Bundle_Shelf_Field_v1.2.48.0 or E7_Bundle_Spectre_Field_v1.2.48.0 or later.",
+      "E7 assigned its Room ID, PAN ID, and RF Channel.",
+      "E7 configured as an Onity lock proxy (Registry 193:9:1 IEEE OUI set to Onity IEEE OUI 00:17:55) via INNTool/EngINN, I/O Map 64, or dialog commands.",
+      "Onity has already installed, initialized, and configured the lock with its room number, using 'Initialize as Edge Device' option in OnPortal.",
+      "OnPortal PC has a BLE GigaDongle installed and working; OnPortal is running and logged in."
+    ],
+    "short_version": {
+      "description": "Assumes E7 has correct software and is fully configured (Room ID, PAN ID, RF Channel, Onity registries) and OnPortal is set up to pair.",
+      "steps": [
+        {
+          "step": 1,
+          "action": "Enter Service Parameter Mode on the E7: Press and hold F/C, press and hold MODE, press FAN, then release all."
+        },
+        {
+          "step": 2,
+          "action": "Use UP arrow to go to the Adr parameter. Press MODE to view value. Set displayed value = 000. Press MODE.",
+          "possible_outcomes": [
+            {
+              "display": "245 (immediate, with beep)",
+              "meaning": "E7 not configured to support Onity Serene locks (Registry 193:9:1 IEEE OUI #0 not set to 00:17:55).",
+              "resolution": "Configure the E7 to support Onity per 'Available Methods to Configure the E7 to support Onity' section, then repeat from Step 1."
+            },
+            {
+              "display": "000 remains, E7 beeps every 5 seconds",
+              "meaning": "E7 is correctly configured and waiting for an advertisement from the lock.",
+              "resolution": "Proceed to Step 3. Process times out after 2 minutes if not completed."
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "action": "On OnPortal, click ENROLL to open the Thermostat Bluetooth Pair screen.",
+          "notes": [
+            "If Inncom server and Onity OnPortal are connected and E7 is online via its Edge Router/B576 floor bridge, check 'ENROLL TO ONPORTAL' so OnPortal sends a CELS mailbox to the lock through the Inncom network as the final pairing step.",
+            "If Inncom server/network is not installed/configured yet, do NOT select ENROLL TO ONPORTAL."
+          ]
+        },
+        {
+          "step": 4,
+          "action": "On OnPortal, click the ENABLE button to start the enrollment process.",
+          "expected_e7_sequence": [
+            { "code": 23, "meaning": "Discovery started (low toned beep)." },
+            { "code": 181, "meaning": "Lock discovered; pairing process starts." },
+            { "code": "6-digit passcode", "meaning": "E7 displays passcode in two 3-digit blocks (e.g., 185918). Repeats for 30 seconds." }
+          ],
+          "failure_case": {
+            "condition": "Passcode not entered into OnPortal within 30 seconds",
+            "e7_display": "240 (long beep) then 25",
+            "meaning": "Pairing failed; link forced disconnected.",
+            "resolution": "Return to Step 1 and restart pairing."
+          }
+        },
+        {
+          "step": 5,
+          "action": "Enter the 6-digit passcode into the OnPortal passkey field and click ENROLL IN NETWORK."
+        },
+        {
+          "step": 6,
+          "action": "OnPortal displays 'Enrolling Device...' then 'Configuring Events'.",
+          "expected_e7_sequence": [
+            { "code": 241, "meaning": "Pairing success - encryption handshake succeeded." },
+            { "code": 221, "meaning": "Bonding success - keys and lock ID stored in E7 SNV." },
+            { "code": 25, "meaning": "Link terminated - BLE connection for pairing dropped (expected)." }
+          ],
+          "results_if_enroll_to_onportal_unchecked": {
+            "Enroll Mesh": "Success",
+            "Enroll RMS": "Success",
+            "Send Status": "Skipped",
+            "note": "E7 and lock ARE paired at this point (BLE icon shows on E7, Ping/Door test will work), but lock remains Offline in OnPortal until Send Status is run separately (see step 6a)."
+          },
+          "results_if_enroll_to_onportal_checked": {
+            "sequence": "OnPortal attempts 'Send Status' - sends CELS mailbox to lock through Inncom network and waits for reply.",
+            "success_results": {
+              "Enroll Mesh": "Success",
+              "Enroll RMS": "Success",
+              "Send Status": "Success"
+            }
+          }
+        },
+        {
+          "step": "6a (optional, if ENROLL TO ONPORTAL was not selected)",
+          "action": "To bring a previously-paired lock online later once Inncom network is installed/online: On Maintenance tab, select Portable Programmer > Load Portable Programmer > Bluetooth Scan > select lock > SELECT DEVICE > ENROLL > click SEND STATUS (not Enroll In Network again).",
+          "expected_result": "'Successful' window if OnPortal can send/receive a CELS mailbox to the lock through Inncom's network."
+        },
+        {
+          "step": 7,
+          "action": "With E7 and Onity lock paired, verify the pairing.",
+          "verification_methods": [
+            {
+              "method": "Ping the lock from E7 Pn6 (Ping) service menu",
+              "steps": [
+                "Enter Service Parameter Mode",
+                "Go to Pn6 menu item, press MODE (000/Value appears)",
+                "Set value to 71",
+                "Press FAN to start pinging (~every 8-10 sec)",
+                "E7 beeps and increments count on each successful reply (may take 10-15 sec for first reply)"
+              ]
+            },
+            {
+              "method": "Door Test",
+              "steps": [
+                "Enter Service Parameter Mode",
+                "Go to dor parameter, press MODE (000/Value appears; set to 000 if not already)",
+                "Open and close the door",
+                "E7 beeps once per opening and displays door open count, continues beeping while open",
+                "E7 stops beeping when door is closed/latched"
+              ]
+            },
+            {
+              "method": "Ping the lock from OnPortal",
+              "condition": "Only if Inncom server and Onity server are connected"
+            }
+          ]
+        }
+      ]
+    },
+    "long_version": {
+      "description": "Full procedure including OnPortal-side steps, used when Inncom is asked to perform binding/pairing directly (Onity personnel normally do this on-site).",
+      "assumption": "Onity has already installed, initialized, and configured the lock with its room number.",
+      "steps": [
+        {
+          "step": 1,
+          "action": "Verify E7 prerequisites",
+          "checklist": [
+            "E7 loaded with E7_Bundle_Shelf_Field_v1.2.48.bin or E7_Bundle_Spectre_Field_v1.2.48 or later and powered.",
+            "E7 configured as an Onity Lock Proxy (via INNTool/EngINN project, I/O Map 64, or dialog commands).",
+            "E7 assigned its required Room ID, PAN ID, RF Channel."
+          ]
+        },
+        {
+          "step": 2,
+          "action": "On the Onity OnPortal server, initiate device selection.",
+          "substeps": [
+            "Verify PC running OnPortal has a working BLE GigaDongle; start/login to OnPortal.",
+            "Select Maintenance > Load Portable Programmer.",
+            "On Portable Programmer screen, select 'USE BLUETOOTH' (vs PPCOM cable), click BLUETOOTH SCAN.",
+            "Select the desired lock from the list, click SELECT DEVICE (lock beeps, shows pink bar, flashes blue ring).",
+            "Click ENROLL to open the Thermostat Bluetooth Pair screen."
+          ],
+          "error_case": {
+            "symptom": "Empty screen instead of Thermostat Bluetooth Pair screen ('SELECT AN APPLICABLE DEVICE TO ENROLL')",
+            "cause": "Lock was not initialized, or not initialized as an 'Edge Device'.",
+            "resolution": "Re-initialize the lock using Maintenance > Portable Programmer > INITIALIZE, selecting 'INITIALIZE AS EDGE DEVICE', then repeat from Step 2."
+          },
+          "decision_point": {
+            "question": "Enroll to OnPortal now or later?",
+            "option_a": "Inncom server/network not installed yet, or E7 not online yet, or don't want to send CELS mailbox now: leave ENROLL TO ONPORTAL unchecked.",
+            "option_b": "Inncom server/network installed and E7 online: check ENROLL TO ONPORTAL to have OnPortal confirm 2-way CELS mailbox communication as the final pairing step."
+          }
+        },
+        {
+          "step": 3,
+          "action": "On the E7, place it into pairing mode.",
+          "substeps": [
+            "Enter Service Parameter Mode (hold F/C, hold MODE, press FAN, release all).",
+            "UP arrow to Adr parameter, press MODE to view value, set displayed value = 000, press MODE."
+          ],
+          "possible_outcomes": [
+            {
+              "display": "245 immediately + beep",
+              "meaning": "Registry 193:9:1 IEEE OUI #0 not set to Onity value 00:17:55.",
+              "resolution": "Configure E7 for Onity support, then repeat from Step 1."
+            },
+            {
+              "display": "000 remains, beeps every 5 sec",
+              "meaning": "Correctly configured, waiting for lock advertisement (2 min timeout)."
+            }
+          ]
+        },
+        {
+          "step": 4,
+          "action": "On OnPortal, click ENABLE to start enrollment/pairing.",
+          "expected_e7_sequence": [
+            { "code": 23, "meaning": "Discovery started." },
+            { "code": 181, "meaning": "Lock discovered, pairing starting." },
+            { "code": "6-digit passcode", "meaning": "Displayed in two 3-digit blocks, repeats for 30 seconds." }
+          ],
+          "failure_case": {
+            "condition": "Passcode not entered within 30 seconds",
+            "e7_display": "240 (long beep) then 25",
+            "resolution": "Return to Step 3 and restart pairing."
+          }
+        },
+        {
+          "step": 5,
+          "action": "Enter the passcode into OnPortal, click Enroll In Network."
+        },
+        {
+          "step": 6,
+          "action": "'Enrolling Device...' then 'Configuring Events' appear on OnPortal.",
+          "expected_e7_sequence": [
+            { "code": 241, "meaning": "Pairing success." },
+            { "code": 221, "meaning": "Bonding success." },
+            { "code": 25, "meaning": "Link terminated (expected/normal)." }
+          ],
+          "outcomes": {
+            "enroll_to_onportal_unchecked": {
+              "results_page": { "Enroll Mesh": "Success", "Enroll RMS": "Success", "Send Status": "Skipped" },
+              "note": "Lock stays Offline in OnPortal (Ping from OnPortal will report 'RMS Server is offline'), but E7-lock BLE pairing is complete: BLE icon shown, Pn6 Ping and door test work."
+            },
+            "enroll_to_onportal_checked": {
+              "results_page_success": { "Enroll Mesh": "Success", "Enroll RMS": "Success", "Send Status": "Success" },
+              "failure_case": {
+                "symptom": "'Send Status was unsuccessful'",
+                "causes": [
+                  "E7 not actually configured as Onity Proxy (verify Registry 193:9:1 IEEE OUI).",
+                  "E7 not correctly communicating with TermDMS (check PAN ID/RF Channel/edge router/B576-S, or WAN test)."
+                ],
+                "resolution": "Fix the underlying issue, then redo enrollment starting at Step 2."
+              }
+            }
+          }
+        },
+        {
+          "step": "6a (bring lock online later)",
+          "action": "If ENROLL TO ONPORTAL was skipped earlier and Inncom is now installed/online: Maintenance > Portable Programmer > Bluetooth Scan > select lock > SELECT DEVICE > ENROLL > click SEND STATUS button (not Enroll In Network).",
+          "expected_result": "'Successful' window confirms OnPortal can send a CELS mailbox to the lock and get a reply."
+        },
+        {
+          "step": 7,
+          "action": "With E7 and lock paired, verify with Ping (E7 Pn6 menu) and Door Test, and optionally Ping the lock from OnPortal.",
+          "ping_from_e7": [
+            "Enter Service Parameter Mode",
+            "Go to Pn6, press MODE, set value to 71",
+            "Press FAN to start pinging (~every 8-10 sec, may take 10-15 sec for first reply)"
+          ],
+          "door_test": [
+            "Enter Service Parameter Mode",
+            "Go to dor parameter, press MODE, ensure value = 000",
+            "Open/close door using handle (must fully latch shut - pushing the switch plunger alone is not sufficient)",
+            "E7 beeps once per open event and displays open count; stops beeping when door closes"
+          ]
+        }
+      ]
+    },
+    "e7_indication_codes": {
+      "23": "Discovery started (E7 scanning address channels for lock advertisements).",
+      "180": "Discovery failed (long beep) - E7 never found the lock. Restart pairing: F/C to return to Adr param, set to 000 again, press MODE.",
+      "181": "Discovery success - lock found, pairing process starting.",
+      "six_digit_passcode": "Displayed in two 3-digit blocks; enter into OnPortal Enroll screen within 30 seconds.",
+      "240": "Pairing failed (long beep) - wrong passcode entered, or E7 already paired with this lock. Followed by 25.",
+      "241": "Pairing success - encryption handshake succeeded.",
+      "220": "Bonding failed (long beep) - E7 could not obtain encryption keys/device info from lock. Retry pairing.",
+      "221": "Bonding success - keys and lock ID stored in E7 SNV (simple non-volatile flash).",
+      "25": "Link terminated - BLE connection for the pairing process dropped (expected/normal at end of successful pairing).",
+      "245": "E7 not configured for Onity (Registry 193:9:1 IEEE OUI not set to 00:17:55).",
+      "beep_convention": {
+        "short_beep_1_second": "Indicates success",
+        "long_beep_4_seconds": "Indicates failure"
+      }
+    },
+    "post_pairing_notes": [
+      "E7 and lock remain paired through E7 resets, factory reboots, or power cycles. Only Onity re-initializing the lock, Inncom replacing the E7, or pairing the E7 with a different lock will un-pair them.",
+      "If the Room ID of the E7 must be changed AFTER pairing, Onity must re-initialize the lock to the new Room ID on OnPortal, and the E7 and lock must be re-paired/re-bonded.",
+      "BLE icon on E7 display (Registry 9:21:0:2 bit 6 BLE, value 0x7B) indicates E7 and lock are bound and communicating; turns off if no beacon seen from lock for >1 minute, back on automatically when beacons resume.",
+      "If E7 has not seen a beacon from the lock for >2 minutes (and SAC alarm feature enabled via Registry 9:13:0:11 bit 0), E7 sends SAC Alarm 0200003C payload 'DEAD'. After 10 minutes with no beacon, E7 sends another 0200003C 'DEAD' alarm and soft-resets to attempt reconnection."
+    ],
+    "related_dialog_commands": {
+      "00194": "Query E7 BLE pairing status with lock. Reply 0x80 (128) = paired; 0x00 = not paired. Requires E7 Shelf 1.2.48 / Spectre 3.2.48 or later.",
+      "0019100050040": "Activates I/O Map 64 on E7 to configure required registries (9:13 CELS, 9:21 DISPLAY, 193:9:1 IEEE OUI) for Onity support. Does NOT perform pairing - only configuration.",
+      "0018CC1090100": "Read Registry 193:9:1 IEEE OUI #0 - should reply 0017550000000047 or 0017550000000040 to confirm Onity proxy configuration."
+    }
+  },
   "reference_images": {
     "images_dir": "images/inncom",
     "sections": {
