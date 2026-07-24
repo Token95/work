@@ -360,7 +360,7 @@ def build_fieldwire_project(extracted_data, rooms, floor_summary, dry_run=True):
             print(f"      □ {item}")
 
         print()
-       gateway_key = VENDOR_GATEWAY_MAP.get(vendor)
+        gateway_key = VENDOR_GATEWAY_MAP.get(vendor)
         if gateway_key:
             gateway_checklist = CHECKLISTS[gateway_key]
             for floor in sorted(floor_summary.keys()):
@@ -371,7 +371,7 @@ def build_fieldwire_project(extracted_data, rooms, floor_summary, dry_run=True):
             print(f"    No gateway tasks for {vendor}")
 
         print(f"\n  ROOMS ({len(rooms)} total)")
-      checklist = CHECKLISTS[room_checklist_key]
+        checklist = CHECKLISTS[room_checklist_key]
         cli_commands = extracted_data.get("CLI_Commands", [])
         cli_items = [
             line for line in cli_commands
